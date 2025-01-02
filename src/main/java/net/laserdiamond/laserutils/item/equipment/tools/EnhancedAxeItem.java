@@ -13,10 +13,9 @@ public class EnhancedAxeItem extends AxeItem {
      * @param enhancedToolTier The {@link EnhancedToolTier} to use for the {@link EnhancedAxeItem}
      * @param attackDamage The bonus attack damage
      * @param attackSpeed The attack speed
-     * @param resLocPath The Resource Location for Attribute Modifiers with unspecified Resource Locations
      * @param properties The {@link Properties} to give the {@link EnhancedAxeItem}
      */
-    public EnhancedAxeItem(EnhancedToolTier enhancedToolTier, int attackDamage, int attackSpeed, String resLocPath, Properties properties) {
-        super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed, resLocPath).build()));
+    public EnhancedAxeItem(EnhancedToolTier enhancedToolTier, float attackDamage, float attackSpeed, Properties properties) {
+        super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
     }
 }

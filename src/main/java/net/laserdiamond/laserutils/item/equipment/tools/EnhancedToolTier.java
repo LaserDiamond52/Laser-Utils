@@ -28,16 +28,16 @@ public record EnhancedToolTier(Tier toolTier, EquipmentAttributes.Factory attrib
 
     /**
      * Creates a {@link ItemAttributeModifiers.Builder} using the {@link EnhancedToolTier}
+     *
      * @param enhancedToolTier The {@link EnhancedToolTier} to use
-     * @param attackDamage The bonus attack damage of the item
-     * @param attackSpeed The attack speed of the item
-     * @param resourceLocationPath The {@link ResourceLocation} for any {@link AttributeModifier}s with unspecified {@link ResourceLocation}s
+     * @param attackDamage     The bonus attack damage of the item
+     * @param attackSpeed      The attack speed of the item
      * @return The {@link ItemAttributeModifiers.Builder} containing the new {@link Attribute}s for any {@link net.minecraft.world.item.TieredItem}
      */
-    public static ItemAttributeModifiers.Builder createEnhancedToolAttributes(EnhancedToolTier enhancedToolTier, int attackDamage, int attackSpeed,String resourceLocationPath)
+    public static ItemAttributeModifiers.Builder createEnhancedToolAttributes(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed)
     {
         final Tier toolTier = enhancedToolTier.toolTier();
-        final EquipmentAttributes equipmentAttributes = enhancedToolTier.attributeFactory().create(ResourceLocation.withDefaultNamespace(resourceLocationPath));
+        final EquipmentAttributes equipmentAttributes = enhancedToolTier.attributeFactory().create(ResourceLocation.withDefaultNamespace("mainhand.attribute"));
         ItemAttributeModifiers.Builder itemAttributeBuilder = ItemAttributeModifiers.builder();
 
         if (!equipmentAttributes.getCanOverride())

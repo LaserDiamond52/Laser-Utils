@@ -13,10 +13,9 @@ public class EnhancedHoeItem extends HoeItem {
      * @param enhancedToolTier The {@link EnhancedToolTier} to use for the {@link EnhancedHoeItem}
      * @param attackDamage The bonus attack damage
      * @param attackSpeed The attack speed
-     * @param resLotPath The Resource Location for Attribute Modifiers with unspecified Resource Locations
      * @param properties The {@link Properties} to give the {@link EnhancedHoeItem}
      */
-    public EnhancedHoeItem(EnhancedToolTier enhancedToolTier, int attackDamage, int attackSpeed, String resLotPath, Properties properties) {
-        super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed, resLotPath).build()));
+    public EnhancedHoeItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
+        super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
     }
 }

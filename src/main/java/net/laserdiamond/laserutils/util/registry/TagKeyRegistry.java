@@ -43,6 +43,26 @@ public final class TagKeyRegistry {
     public final ResourceKeyTags<Biome> biomeTags;
 
     /**
+     * Item Tag Key tag registry
+     */
+    public final TagKeyTags<Item> itemTagKeyTags;
+
+    /**
+     * Block Tag Key tag registry
+     */
+    public final TagKeyTags<Block> blockTagKeyTags;
+
+    /**
+     * Entity Type Tag Key tag registry
+     */
+    public final TagKeyTags<EntityType<?>> entityTypeTagKeyTags;
+
+    /**
+     * Enchantment Tag Key tag registry
+     */
+    public final TagKeyTags<Enchantment> enchantmentTagKeyTags;
+
+    /**
      * {@link HashMap} of all the {@link TagKeyRegistry}s from their mods
      */
     private static final HashMap<String, TagKeyRegistry> MOD_TAGS = new HashMap<>();
@@ -57,6 +77,10 @@ public final class TagKeyRegistry {
         this.entityTypeTags = new RegistryObjectTags<>();
         this.enchantmentTags = new ResourceKeyTags<>();
         this.biomeTags = new ResourceKeyTags<>();
+        this.itemTagKeyTags = new TagKeyTags<>();
+        this.blockTagKeyTags = new TagKeyTags<>();
+        this.entityTypeTagKeyTags = new TagKeyTags<>();
+        this.enchantmentTagKeyTags = new TagKeyTags<>();
     }
 
     /**
@@ -84,7 +108,12 @@ public final class TagKeyRegistry {
      * {@link RegistryMap} used to help store {@link TagKey}s that will be applied to the same type of {@link ResourceKey}
      * @param <R> The {@link ResourceKey} and {@link TagKey} type
      */
-    @Deprecated
     public static final class ResourceKeyTags<R> extends RegistryMap<ResourceKey<R>, List<TagKey<R>>> {}
+
+    /**
+     * {@link RegistryMap} used to help store {@link TagKey}s that will be applied to the same type of {@link TagKey}
+     * @param <R> The {@link TagKey} type
+     */
+    public static final class TagKeyTags<R> extends RegistryMap<TagKey<R>, List<TagKey<R>>> {}
 
 }

@@ -36,14 +36,14 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput recipeOutput)
+    protected final void buildRecipes(RecipeOutput recipeOutput)
     {
         this.dataGenerator.itemDeferredRegister().getEntries().forEach((itemRegistryObject) ->
         {
+            this.craftAdditionalItems(itemRegistryObject, recipeOutput);
             this.craftArmorItems(itemRegistryObject, recipeOutput);
             this.craftToolItems(itemRegistryObject, recipeOutput);
             this.craftSmithingItems(itemRegistryObject, recipeOutput);
-            this.craftAdditionalItems(itemRegistryObject, recipeOutput);
             this.createSmithingTemplateRecipes(itemRegistryObject, recipeOutput);
         });
     }
@@ -64,6 +64,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
             if (armorItem instanceof GenericArmorCraftableItem armorCraftableItem)
             {
                 ItemLike materialItem = armorCraftableItem.materialItem();
+
+                this.craftAdditionalArmorItems(itemRegistryObject, armorCraftableItem, recipeOutput);
+
                 switch (equipmentSlot)
                 {
                     case HEAD -> ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armorItem)
@@ -100,7 +103,6 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                             .unlockedBy(getHasName(materialItem), has(materialItem))
                             .save(recipeOutput);
                 }
-                this.craftAdditionalArmorItems(itemRegistryObject, armorCraftableItem, recipeOutput);
             }
         }
     }
@@ -128,6 +130,8 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
         {
             ItemLike materialItem = craftableItem.materialItem();
             ItemLike stickItem = craftableItem.stickItem();
+
+            this.craftAdditionalToolItems(itemRegistryObject, craftableItem, recipeOutput);
 
             switch (item) {
                 case SwordItem swordItem -> ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, swordItem)
@@ -172,8 +176,6 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .save(recipeOutput);
                 default -> {}
             }
-
-            craftAdditionalToolItems(itemRegistryObject, craftableItem, recipeOutput);
         }
     }
 
