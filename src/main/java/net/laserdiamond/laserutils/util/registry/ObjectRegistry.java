@@ -82,6 +82,7 @@ public class ObjectRegistry {
      * @return A new {@link Holder} of the specified type
      * @param <T> The object type to register
      */
+    @Deprecated
     public static <T> Holder<T> registerHolder(Registry<T> registry, LanguageRegistry.Names<Holder<T>> nameRegistry, String modId, String name, String localName, T object)
     {
         Holder<T> holder = Registry.registerForHolder(registry, ResourceLocation.fromNamespaceAndPath(modId, localName), object);
@@ -370,17 +371,32 @@ public class ObjectRegistry {
     }
 
     /**
-     * Registers a new {@link Attribute} under {@link Registry#registerForHolder(Registry, ResourceKey, Object)} and the {@link LanguageRegistry}. Example:
-     * <pre></pre>
+     * Registers a new attribute under a {@link Attribute} {@link DeferredRegister} and the {@link LanguageRegistry}.
+     * Example:
+     * <pre>{@code
+     *
+     * private static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(ForgeRegistries.ATTRIBUTES, MODID);
+     *
+     * public static final RegistryObject<Attribute> EXAMPLE_ATTRIBUTE = registerAttribute("Example Attribute", "example_attribute", () -> new RangedAttribute("description_id", 100, 0, 100));
+     *
+     * private static RegistryObject<Attribute> registerAttribute(String name, String localName, Supplier<Attribute> attributeSupplier)
+     * {
+     *      return ObjectRegistry.registerAttribute(MODID, ATTRIBUTES, name, localName, attributeSupplier);
+     * }
+     *
+     * }</pre>
      * @param modId The Mod ID
-     * @param name The name of the {@link Attribute} in-game
+     * @param attributeDeferredRegister The {@link Attribute} {@link DeferredRegister} to register the {@link Attribute} under
+     * @param name The name of the attribute in-game
      * @param localName The local name of the attribute
-     * @param attribute The {@link Attribute} to create
-     * @return A new {@link Holder} of the {@link Attribute}
+     * @param attributeSupplier The {@link Attribute} {@link Supplier}
+     * @return A new {@link Attribute} {@link RegistryObject}
      */
-    public static Holder<Attribute> registerAttribute(String modId, String name, String localName, Attribute attribute)
+    public static RegistryObject<Attribute> registerAttribute(String modId, DeferredRegister<Attribute> attributeDeferredRegister, String name, String localName, Supplier<Attribute> attributeSupplier)
     {
-        return registerHolder(BuiltInRegistries.ATTRIBUTE, languageRegistry(modId, LanguageRegistry.Language.EN_US).attributeRegistryObjectNameRegistry, modId, name, localName, attribute);
+        RegistryObject<Attribute> ret = attributeDeferredRegister.register(localName, attributeSupplier);
+        languageRegistry(modId, LanguageRegistry.Language.EN_US).attributeRegistryObjectNameRegistry.addEntry(ret, name);
+        return ret;
     }
 
     /**

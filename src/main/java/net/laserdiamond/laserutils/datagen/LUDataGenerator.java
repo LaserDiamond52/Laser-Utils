@@ -214,7 +214,7 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @return The {@link LUTagProvider.BiomeTags} to use to apply {@link net.minecraft.tags.TagKey}s to biomes
      */
     @NotNull
-    protected abstract  LUTagProvider.BiomeTags<T> biomeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
+    protected abstract LUTagProvider.BiomeTags<T> biomeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
 
     /**
      * @return The Mod ID of the {@link LUDataGenerator}
@@ -222,4 +222,5 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
     public String getModId() {
         return modId;
     }
+
 }

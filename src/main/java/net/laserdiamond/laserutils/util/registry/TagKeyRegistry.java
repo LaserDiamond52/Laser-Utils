@@ -84,6 +84,7 @@ public final class TagKeyRegistry {
      * {@link RegistryMap} used to help store {@link TagKey}s that will be applied to the same type of {@link ResourceKey}
      * @param <R> The {@link ResourceKey} and {@link TagKey} type
      */
+    @Deprecated
     public static final class ResourceKeyTags<R> extends RegistryMap<ResourceKey<R>, List<TagKey<R>>> {}
 
 }

@@ -1,15 +1,53 @@
 package net.laserdiamond.laserutils.network;
 
+import net.laserdiamond.laserutils.LaserUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.SimpleChannel;
 
 import java.util.function.Function;
 
+/**
+ * Registers {@link NetworkPacket}s for Laser Utils.
+ */
 public class NetworkPackets {
+
+    /**
+     * The {@link SimpleChannel} instance
+     */
+    public static SimpleChannel INSTANCE;
+
+    /**
+     * The packet ID. Each packet sent should have a unique ID
+     */
+    private static int packetId = 0;
+
+    /**
+     * @return The ID of the packet to be sent. Packets will have a unique ID from one another, where each packet's ID is incremented by one from the previous
+     */
+    private static int id()
+    {
+        return packetId++;
+    }
+
+    /**
+     * Registers all packets for Laser Utils
+     */
+    public static void registerPackets()
+    {
+        INSTANCE = ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(LaserUtils.MODID, "main"))
+                .serverAcceptedVersions((status, i) -> true)
+                .clientAcceptedVersions((status, i) -> true)
+                .networkProtocolVersion(1)
+                .simpleChannel();
+
+        registerPacket(INSTANCE, id(), ItemAbilityPacket.class, ItemAbilityPacket::new, NetworkDirection.PLAY_TO_SERVER);
+    }
 
     /**
      * Registers a new packet

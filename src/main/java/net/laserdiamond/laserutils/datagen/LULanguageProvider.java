@@ -28,6 +28,18 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
         this.languageRegistry = LanguageRegistry.instance(dataGenerator.modId, language);
     }
 
+    /**
+     * Creates a new {@link LULanguageProvider}
+     * @param output The {@link PackOutput} of the {@link net.minecraft.data.DataGenerator}
+     * @param modId The Mod ID
+     * @param language The {@link net.laserdiamond.laserutils.util.registry.LanguageRegistry.LanguageType} to create the JSON file for
+     */
+    public LULanguageProvider(PackOutput output, String modId, LanguageRegistry.LanguageType language)
+    {
+        super(output, modId, language.getName());
+        this.languageRegistry = LanguageRegistry.instance(modId, language);
+    }
+
     @Override
     protected final void addTranslations()
     {
@@ -37,10 +49,14 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
         this.addEntityTranslations();
         this.addAttributeTranslations();
         this.addCreativeTabTranslations();
-
+        this.addKeyMappingTranslations();
+        this.addAdditionalNamesTranslations();
         this.addAdditionalTranslations();
     }
 
+    /**
+     * Adds any additional translations not specified by the {@link LanguageRegistry}
+     */
     protected void addAdditionalTranslations() {}
 
     /**
@@ -55,7 +71,7 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
     }
 
     /**
-     * Adds {@link Item} translations
+     * Adds {@link Item} translations from {@link LanguageRegistry#itemRegistryObjectNameRegistry}
      */
     protected final void addItemTranslations()
     {
@@ -64,7 +80,7 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
     }
 
     /**
-     * Adds {@link net.minecraft.world.level.block.Block} translations
+     * Adds {@link net.minecraft.world.level.block.Block} translations from {@link LanguageRegistry#blockRegistryObjectNameRegistry}
      */
     protected final void addBlockTranslations()
     {
@@ -73,7 +89,7 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
     }
 
     /**
-     * Adds {@link net.minecraft.world.effect.MobEffect} translations
+     * Adds {@link net.minecraft.world.effect.MobEffect} translations from {@link LanguageRegistry#mobEffectRegistryObjectNameRegistry}
      */
     protected final void addMobEffectTranslations()
     {
@@ -82,7 +98,7 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
     }
 
     /**
-     * Adds {@link net.minecraft.world.entity.EntityType} translations
+     * Adds {@link net.minecraft.world.entity.EntityType} translations from {@link LanguageRegistry#entityRegistryObjectNameRegistry}
      */
     protected final void addEntityTranslations()
     {
@@ -91,21 +107,38 @@ public class LULanguageProvider<T extends LUDataGenerator<T>> extends LanguagePr
     }
 
     /**
-     * Adds {@link net.minecraft.world.entity.ai.attributes.Attribute} translations
+     * Adds {@link net.minecraft.world.entity.ai.attributes.Attribute} translations from {@link LanguageRegistry#attributeRegistryObjectNameRegistry}
      */
     protected final void addAttributeTranslations()
     {
-        this.addTranslation(this.languageRegistry.attributeRegistryObjectNameRegistry, (attribute, s) ->
-                this.add("attribute." + attribute.get().getDescriptionId(), s));
+        this.addTranslation(this.languageRegistry.attributeRegistryObjectNameRegistry, (attributeRegistryObject, s) ->
+                this.add("attribute", attributeRegistryObject.getId(), s));
     }
 
     /**
-     * Adds {@link net.minecraft.world.item.CreativeModeTab} translations
+     * Adds {@link net.minecraft.world.item.CreativeModeTab} translations from {@link LanguageRegistry#creativeModeTabRegistry}
      */
     protected final void addCreativeTabTranslations()
     {
         this.addTranslation(this.languageRegistry.creativeModeTabRegistry, (creativeModeTabRegistryObject, s) ->
                 this.add("creative_tab", creativeModeTabRegistryObject.getId(), s));
+    }
+
+    /**
+     * Adds {@link net.minecraft.client.KeyMapping} translations from {@link LanguageRegistry#keyMappingNameRegistry}
+     */
+    protected final void addKeyMappingTranslations()
+    {
+        this.addTranslation(this.languageRegistry.keyMappingNameRegistry, (keyMapping, s) ->
+                this.add(keyMapping.getName(), s));
+    }
+
+    /**
+     * Adds additional names translations from {@link LanguageRegistry#additionalNamesRegistry}
+     */
+    protected final void addAdditionalNamesTranslations()
+    {
+        this.addTranslation(this.languageRegistry.additionalNamesRegistry, this::add);
     }
 
     /**

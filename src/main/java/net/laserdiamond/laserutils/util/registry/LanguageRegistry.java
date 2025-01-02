@@ -30,7 +30,7 @@ public final class LanguageRegistry {
     /**
      * Attribute name registry
      */
-    public final Names<Holder<Attribute>> attributeRegistryObjectNameRegistry;
+    public final Names<RegistryObject<Attribute>> attributeRegistryObjectNameRegistry;
 
     /**
      * Creative Mode Tab name registry
