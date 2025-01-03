@@ -72,25 +72,6 @@ public class ObjectRegistry {
     }
 
     /**
-     * Registers a {@link Holder} object under its respective {@link Registry}
-     * @param registry The {@link Registry} to register the {@link Holder} object under
-     * @param nameRegistry The {@link LanguageRegistry.Names} to register the object's translation under
-     * @param modId The Mod ID
-     * @param name The name of the object in-game
-     * @param localName The local name of the object
-     * @param object The object to register
-     * @return A new {@link Holder} of the specified type
-     * @param <T> The object type to register
-     */
-    @Deprecated
-    public static <T> Holder<T> registerHolder(Registry<T> registry, LanguageRegistry.Names<Holder<T>> nameRegistry, String modId, String name, String localName, T object)
-    {
-        Holder<T> holder = Registry.registerForHolder(registry, ResourceLocation.fromNamespaceAndPath(modId, localName), object);
-        nameRegistry.addEntry(holder, name);
-        return holder;
-    }
-
-    /**
      * Registers a {@link ResourceKey} object under its respective {@link ResourceKey} {@link Registry}
      * @param registryResourceKey The {@link Registry}'s {@link ResourceKey}
      * @param resourceType The resource type being made (ex: enchantment, biome, etc.)
@@ -104,6 +85,36 @@ public class ObjectRegistry {
     {
         languageRegistry(modId, LanguageRegistry.Language.EN_US).additionalNamesRegistry.addEntry(resourceType + "." + modId + "." + localName, name);
         return ResourceKey.create(registryResourceKey, ResourceLocation.fromNamespaceAndPath(modId, localName));
+    }
+
+    /**
+     * Creates a new {@link TagKey} of the specified type {@link T}
+     * @param registry The {@link ResourceKey} of the {@link Registry} type to make {@link TagKey}s for
+     * @param modId The Mod ID
+     * @param path The path of the {@link TagKey}
+     * @return A new {@link TagKey}
+     * @param <T> The {@link TagKey} type to make
+     */
+    public static <T> TagKey<T> createTag(ResourceKey<Registry<T>> registry, String modId, String path)
+    {
+        return TagKey.create(registry, modId, path);
+    }
+
+    /**
+     * Creates a new {@link TagKey} of the specified type {@link T} and maps it to other {@link TagKey} types
+     * @param registry The {@link ResourceKey} of the {@link Registry} type to make {@link TagKey}s for
+     * @param modId The Mod ID
+     * @param path The path of the {@link TagKey}
+     * @param tagKeyRegistry The {@link TagKeyRegistry} to map {@link TagKey}s to
+     * @param tags The {@link TagKey} to map to the new {@link TagKey}
+     * @return A new {@link TagKey}
+     * @param <T> The {@link TagKey} type to make
+     */
+    public static <T> TagKey<T> createTag(ResourceKey<Registry<T>> registry, String modId, String path, TagKeyRegistry.TagKeyTags<T> tagKeyRegistry, List<TagKey<T>> tags)
+    {
+        TagKey<T> ret = createTag(registry, modId, path);
+        tagKeyRegistry.addEntry(ret, tags);
+        return ret;
     }
 
     /**

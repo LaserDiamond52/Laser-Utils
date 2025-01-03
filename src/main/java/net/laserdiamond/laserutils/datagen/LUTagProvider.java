@@ -55,6 +55,13 @@ public class LUTagProvider {
                     this.tag(itemTagKey).add(registryObject.get());
                 }
             });
+            TagKeyRegistry.instance(this.modId).itemTagKeyTags.getMap().forEach((itemTagKey, tagKeys) ->
+            {
+                for (TagKey<Item> tagKey : tagKeys)
+                {
+                    this.tag(itemTagKey).addTag(tagKey);
+                }
+            });
         }
 
     }
@@ -87,6 +94,13 @@ public class LUTagProvider {
                 for (TagKey<Block> blockTagKey : tagKeys)
                 {
                     this.tag(blockTagKey).add(registryObject.get());
+                }
+            });
+            TagKeyRegistry.instance(this.modId).blockTagKeyTags.getMap().forEach((blockTagKey, tagKeys) ->
+            {
+                for (TagKey<Block> tagKey : tagKeys)
+                {
+                    this.tag(blockTagKey).addTag(tagKey);
                 }
             });
         }
@@ -122,6 +136,13 @@ public class LUTagProvider {
                     this.tag(entityTypeTagKey).add(registryObject.get());
                 }
             });
+            TagKeyRegistry.instance(this.modId).entityTypeTagKeyTags.getMap().forEach((entityTypeTagKey, tagKeys) ->
+            {
+                for (TagKey<EntityType<?>> tagKey : tagKeys)
+                {
+                    this.tag(entityTypeTagKey).addTag(tagKey);
+                }
+            });
         }
     }
 
@@ -154,6 +175,13 @@ public class LUTagProvider {
                     this.tag(enchantmentTagKey).add(resourceKey);
                 }
             });
+            TagKeyRegistry.instance(this.modId).enchantmentTagKeyTags.getMap().forEach(((enchantmentTagKey, tagKeys) ->
+            {
+                for (TagKey<Enchantment> tagKey : tagKeys)
+                {
+                    this.tag(enchantmentTagKey).addTag(tagKey);
+                }
+            }));
         }
     }
 
@@ -183,6 +211,13 @@ public class LUTagProvider {
                 for (TagKey<Biome> biomeTagKey : tagKeys)
                 {
                     this.tag(biomeTagKey).add(biomeResourceKey);
+                }
+            });
+            TagKeyRegistry.instance(this.modId).biomeTagKeyTags.getMap().forEach((biomeTagKey, tagKeys) ->
+            {
+                for (TagKey<Biome> tagKey : tagKeys)
+                {
+                    this.tag(biomeTagKey).addTag(tagKey);
                 }
             });
         }

@@ -63,6 +63,11 @@ public final class TagKeyRegistry {
     public final TagKeyTags<Enchantment> enchantmentTagKeyTags;
 
     /**
+     * Biome Tag Key tag registry
+     */
+    public final TagKeyTags<Biome> biomeTagKeyTags;
+
+    /**
      * {@link HashMap} of all the {@link TagKeyRegistry}s from their mods
      */
     private static final HashMap<String, TagKeyRegistry> MOD_TAGS = new HashMap<>();
@@ -81,6 +86,7 @@ public final class TagKeyRegistry {
         this.blockTagKeyTags = new TagKeyTags<>();
         this.entityTypeTagKeyTags = new TagKeyTags<>();
         this.enchantmentTagKeyTags = new TagKeyTags<>();
+        this.biomeTagKeyTags = new TagKeyTags<>();
     }
 
     /**
