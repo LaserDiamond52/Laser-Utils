@@ -15,7 +15,7 @@ public class EnhancedAxeItem extends AxeItem {
      * @param attackSpeed The attack speed
      * @param properties The {@link Properties} to give the {@link EnhancedAxeItem}
      */
-    public EnhancedAxeItem(EnhancedToolTier enhancedToolTier, float attackDamage, float attackSpeed, Properties properties) {
+    public EnhancedAxeItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
         super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
     }
 }
