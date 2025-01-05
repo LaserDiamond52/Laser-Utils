@@ -8,6 +8,8 @@ import net.minecraft.world.item.Tier;
  */
 public class EnhancedShovelItem extends ShovelItem {
 
+    protected final EnhancedToolTier enhancedToolTier;
+
     /**
      * Creates a new {@link EnhancedShovelItem}
      * @param enhancedToolTier The {@link EnhancedToolTier} to use for the {@link EnhancedShovelItem}
@@ -17,5 +19,6 @@ public class EnhancedShovelItem extends ShovelItem {
      */
     public EnhancedShovelItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
         super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
+        this.enhancedToolTier = enhancedToolTier;
     }
 }

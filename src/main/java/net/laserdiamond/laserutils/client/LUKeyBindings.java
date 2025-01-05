@@ -98,26 +98,26 @@ public class LUKeyBindings {
                 }
                 if (localPlayer.getMainHandItem().getItem() instanceof DurationAbilityItem abilityItem)
                 {
-                    if (abilityItem.cooldownTicks() <= 0)
+                    if (abilityItem.cooldownTicks() < 0)
                     {
-                        throw new IllegalStateException("Ability cooldown for " + localPlayer.getMainHandItem().getItem() + " cannot be 0 or less!");
+                        throw new IllegalStateException("Ability cooldown for " + localPlayer.getMainHandItem().getItem() + " cannot be less than 0!");
                     }
-                    if (abilityItem.abilityDurationTicks() <= 0)
+                    if (abilityItem.abilityDurationTicks() < 0)
                     {
-                        throw new IllegalStateException("Ability duration for " + localPlayer.getMainHandItem().getItem() + " cannot be 0 or less!");
+                        throw new IllegalStateException("Ability duration for " + localPlayer.getMainHandItem().getItem() + " cannot be less than 0!");
                     }
-                    if (!localPlayer.getCooldowns().isOnCooldown(localPlayer.getMainHandItem().getItem()) && abilityItem.additionalConditions())
+                    if (!localPlayer.getCooldowns().isOnCooldown(localPlayer.getMainHandItem().getItem()) && abilityItem.additionalConditions(event))
                     {
                         abilityItem.onClient(event);
                         NetworkPackets.sendToServer(NetworkPackets.INSTANCE, new ItemAbilityPacket());
                     }
                 } else if (localPlayer.getMainHandItem().getItem() instanceof AbilityItem abilityItem)
                 {
-                    if (abilityItem.cooldownTicks() <= 0)
+                    if (abilityItem.cooldownTicks() < 0)
                     {
-                        throw new IllegalStateException("Ability cooldown for " + localPlayer.getMainHandItem().getItem() + " cannot be 0 or less!");
+                        throw new IllegalStateException("Ability cooldown for " + localPlayer.getMainHandItem().getItem() + " cannot be less than 0!");
                     }
-                    if (!localPlayer.getCooldowns().isOnCooldown(localPlayer.getMainHandItem().getItem()) && abilityItem.additionalConditions())
+                    if (!localPlayer.getCooldowns().isOnCooldown(localPlayer.getMainHandItem().getItem()) && abilityItem.additionalConditions(event))
                     {
                         abilityItem.onClient(event);
                         NetworkPackets.sendToServer(NetworkPackets.INSTANCE, new ItemAbilityPacket());

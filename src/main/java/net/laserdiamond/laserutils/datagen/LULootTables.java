@@ -68,7 +68,7 @@ public abstract class LULootTables<T extends LUDataGenerator<T>> {
      * @param <T> The {@link LUDataGenerator} class
      * @see BlockLootSubProvider
      */
-    public abstract static class BlockLoot<T extends LUDataGenerator<T>> extends BlockLootSubProvider implements AssetGenerator<Block>
+    public static class BlockLoot<T extends LUDataGenerator<T>> extends BlockLootSubProvider implements AssetGenerator<Block>
     {
         protected final T dataGenerator;
 
@@ -118,7 +118,7 @@ public abstract class LULootTables<T extends LUDataGenerator<T>> {
      * @param <T> The {@link LUDataGenerator} class
      * @see EntityLootSubProvider
      */
-    public abstract static class EntityLoot<T extends LUDataGenerator<T>> extends EntityLootSubProvider implements AssetGenerator<EntityType<?>>
+    public static class EntityLoot<T extends LUDataGenerator<T>> extends EntityLootSubProvider implements AssetGenerator<EntityType<?>>
     {
         protected final T dataGenerator;
 

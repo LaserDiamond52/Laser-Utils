@@ -8,6 +8,8 @@ import net.minecraft.world.item.Tier;
  */
 public class EnhancedAxeItem extends AxeItem {
 
+    protected final EnhancedToolTier enhancedToolTier;
+
     /**
      * Creates a new {@link EnhancedAxeItem}
      * @param enhancedToolTier The {@link EnhancedToolTier} to use for the {@link EnhancedAxeItem}
@@ -17,5 +19,6 @@ public class EnhancedAxeItem extends AxeItem {
      */
     public EnhancedAxeItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
         super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
+        this.enhancedToolTier = enhancedToolTier;
     }
 }

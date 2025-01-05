@@ -68,7 +68,7 @@ public class LUItemModelProvider<T extends LUDataGenerator<T>> extends ItemModel
         this.objectRegistry().getEntries().forEach((itemRegistryObject) ->
         {
             Item item = itemRegistryObject.get();
-            if (!(item instanceof AssetSkipModel))
+            if (item instanceof AssetSkipModel)
             {
                 return;
             }

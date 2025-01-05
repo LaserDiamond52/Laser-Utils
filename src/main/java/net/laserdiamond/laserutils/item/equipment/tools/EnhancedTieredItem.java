@@ -8,6 +8,8 @@ import net.minecraft.world.item.TieredItem;
  */
 public class EnhancedTieredItem extends TieredItem {
 
+    protected final EnhancedToolTier enhancedToolTier;
+
     /**
      * Creates a new {@link EnhancedTieredItem}
      * @param enhancedToolTier The {@link EnhancedToolTier} of the {@link TieredItem}
@@ -17,5 +19,6 @@ public class EnhancedTieredItem extends TieredItem {
      */
     public EnhancedTieredItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
         super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
+        this.enhancedToolTier = enhancedToolTier;
     }
 }

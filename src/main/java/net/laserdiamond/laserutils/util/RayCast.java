@@ -1,7 +1,7 @@
 package net.laserdiamond.laserutils.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -57,6 +57,11 @@ public class RayCast<E extends Entity, ER, BSR> {
     private double stepIncrement;
 
     /**
+     * The step size of the {@link RayCast}
+     */
+    private double stepSize;
+
+    /**
      * The entity filter {@link Predicate}
      */
     private final Predicate<E> entityFilter;
@@ -72,9 +77,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     private final List<Class<? extends Block>> blockClazzes;
 
     /**
-     * The {@link SimpleParticleType}s to display at each step of the {@link RayCast}
+     * The {@link ParticleOptions}s to display at each step of the {@link RayCast}
      */
-    private final List<SimpleParticleType> particles;
+    private final List<ParticleOptions> particles;
 
     /**
      * Determines if the {@link RayCast} pierces blocks
@@ -159,6 +164,7 @@ public class RayCast<E extends Entity, ER, BSR> {
         this.entityClazz = entityClazz;
         this.blockClazzes = blockClazzes;
         this.stepIncrement = 0.3;
+        this.stepSize = 0;
         this.particles = new ArrayList<>();
         this.hitEntities = new ArrayList<>();
         this.hitBlockStates = new ArrayList<>();
@@ -273,26 +279,45 @@ public class RayCast<E extends Entity, ER, BSR> {
      * A smaller step increment can result in a shorter firing distance,
      * and a larger step increment will result in a longer firing distance.
      * Visible if particles are not null
-     * @param stepIncrement the step increment
+     * @param stepIncrement The step increment
      * @return {@link RayCast} instance
-     * @throws IllegalStateException If the step increment entered is equal to or less than 0
+     * @throws IllegalArgumentException If the step increment entered is equal to or less than 0
      */
-    public RayCast<E, ER, BSR> setStepIncrement(double stepIncrement) throws IllegalStateException
+    public RayCast<E, ER, BSR> setStepIncrement(double stepIncrement) throws IllegalArgumentException
     {
-        this.stepIncrement = stepIncrement;
-        if (this.stepIncrement <= 0)
+        if (stepIncrement <= 0)
         {
-            throw new IllegalStateException("Step increment for ray cast cannot be less than 0! Value offered: " + this.stepIncrement);
+            throw new IllegalArgumentException("Step increment for ray cast cannot be less than or equal to 0! Value offered: " + stepIncrement);
         }
+        this.stepIncrement = stepIncrement;
+        return this;
+    }
+
+    /**
+     * Sets the step size of the ray cast.
+     * A larger step size can result in a {@link RayCast} being more likely to hit a {@link LivingEntity} (a {@link Block} hit is based on the {@link BlockPos} of the step and NOT the step size.
+     * This does not affect the {@link RayCast#stepIncrement}.
+     * The size of the step isn't displayed by particles
+     * @param stepSize The step size
+     * @return {@link RayCast} instance
+     * @throws IllegalArgumentException If the step size entered is less than 0
+     */
+    public RayCast<E, ER, BSR> setStepSize(double stepSize) throws IllegalArgumentException
+    {
+        if (stepSize < 0)
+        {
+            throw new IllegalArgumentException("Step size for ray cast cannot be less than 0! Value offered: " + stepSize);
+        }
+        this.stepSize = stepSize;
         return this;
     }
 
     /**
      * Adds a particle to be displayed at each step of the ray cast
-     * @param particle The {@link SimpleParticleType} to display at each step
+     * @param particle The {@link ParticleOptions} to display at each step
      * @return {@link RayCast} instance
      */
-    public RayCast<E, ER, BSR> addParticle(SimpleParticleType particle)
+    public RayCast<E, ER, BSR> addParticle(ParticleOptions particle)
     {
         this.particles.add(particle);
         return this;
@@ -300,10 +325,10 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Removes a particle to be displayed at each step of the ray cast
-     * @param particle the {@link SimpleParticleType} to remove from being displayed
+     * @param particle the {@link ParticleOptions} to remove from being displayed
      * @return {@link RayCast} instance
      */
-    public RayCast<E, ER, BSR> removeParticle(SimpleParticleType particle)
+    public RayCast<E, ER, BSR> removeParticle(ParticleOptions particle)
     {
         this.particles.remove(particle);
         return this;
@@ -311,10 +336,10 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Adds a {@link Collection} of particles to be displayed at each step of the ray cast
-     * @param particleTypes The {@link SimpleParticleType}s to display at each step of the ray cast
+     * @param particleTypes The {@link ParticleOptions}s to display at each step of the ray cast
      * @return {@link RayCast} instance
      */
-    public RayCast<E, ER, BSR> addParticles(Collection<? extends SimpleParticleType> particleTypes)
+    public RayCast<E, ER, BSR> addParticles(Collection<? extends ParticleOptions> particleTypes)
     {
         this.particles.addAll(particleTypes);
         return this;
@@ -380,7 +405,7 @@ public class RayCast<E extends Entity, ER, BSR> {
         for (double i = 0; i < distance; i += this.stepIncrement)
         {
             Vec3 rayCast = this.startPos.add(rayCastVec.scale(i));
-            AABB aabb = new AABB(rayCast, rayCast);
+            AABB aabb = new AABB(rayCast.subtract(this.stepSize, this.stepSize, this.stepSize), rayCast.add(this.stepSize, this.stepSize, this.stepSize));
 
             this.currentBlockPos = new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z); // Assign our current block position
             BlockState blockState = this.serverLevel.getBlockState(this.currentBlockPos);

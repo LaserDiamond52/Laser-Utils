@@ -8,6 +8,8 @@ import net.minecraft.world.item.Tier;
  */
 public class EnhancedHoeItem extends HoeItem {
 
+    protected final EnhancedToolTier enhancedToolTier;
+
     /**
      * Creates a new {@link EnhancedHoeItem}
      * @param enhancedToolTier The {@link EnhancedToolTier} to use for the {@link EnhancedHoeItem}
@@ -17,5 +19,6 @@ public class EnhancedHoeItem extends HoeItem {
      */
     public EnhancedHoeItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
         super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
+        this.enhancedToolTier = enhancedToolTier;
     }
 }

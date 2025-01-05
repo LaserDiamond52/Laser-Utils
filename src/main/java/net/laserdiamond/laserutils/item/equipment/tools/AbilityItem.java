@@ -28,9 +28,10 @@ public interface AbilityItem {
 
     /**
      * Specifies any additional conditions that must be met for the item to cast its ability. This will always return true if not overridden
+     * @param event The {@link net.minecraftforge.client.event.InputEvent.Key} event
      * @return True if the additional conditions are met.
      */
-    default boolean additionalConditions()
+    default boolean additionalConditions(InputEvent.Key event)
     {
         return true;
     }
