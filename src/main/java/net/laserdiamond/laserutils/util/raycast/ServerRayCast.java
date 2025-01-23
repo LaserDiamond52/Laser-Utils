@@ -29,6 +29,13 @@ public class ServerRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Se
         super(level, startPos, entityFilter, entityClazz, blockClazzes);
     }
 
+    @Override
+    void displayParticles(ServerLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
+    {
+        level.sendParticles(particleOptions, rayCastPos.x, rayCastPos.y, rayCastPos.z, 1, 0.0, 0.0, 0.0, 0.0);
+    }
+
+
     /**
      * Creates a new {@link ServerRayCast}
      * @param serverLevel The {@link ServerLevel} to perform the {@link ServerRayCast} on
@@ -42,9 +49,4 @@ public class ServerRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Se
         return new ServerRayCast<>(serverLevel, startPos, entityFilter, entityClazz, blockClazzes);
     }
 
-    @Override
-    void displayParticles(ParticleOptions particle, Vec3 rayCastPos)
-    {
-        this.level.sendParticles(particle, rayCastPos.x, rayCastPos.y, rayCastPos.z, 1, 0.0, 0.0, 0.0, 0.0);
-    }
 }

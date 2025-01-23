@@ -1,7 +1,9 @@
 package net.laserdiamond.laserutils.util.raycast;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -169,12 +171,14 @@ public abstract class AbstractRayCast<L extends Level, E extends Entity, ER, BSR
         this.currentPosition = null;
     }
 
+
     /**
      * Abstract method used to define how particles should be displayed for each subclass.
-     * @param particle The {@link ParticleOptions} being displayed at each step of the {@link AbstractRayCast}
+     * @param level The {@link Level} the {@link ParticleOptions} are being displayed on
+     * @param particleOptions The {@link ParticleOptions} being displayed at each step of the {@link AbstractRayCast}
      * @param rayCastPos The {@link Vec3} step position of where the {@link ParticleOptions} are being displayed in the {@link AbstractRayCast}
      */
-    abstract void displayParticles(ParticleOptions particle, Vec3 rayCastPos);
+    abstract void displayParticles(L level, ParticleOptions particleOptions, Vec3 rayCastPos);
 
     /**
      * Gets the {@link Object} to return when the {@link Function} of this class is called
@@ -433,7 +437,12 @@ public abstract class AbstractRayCast<L extends Level, E extends Entity, ER, BSR
 
             if (!this.particles.isEmpty()) // Are there any particles to display?
             {
-                this.particles.forEach(particleOptions -> displayParticles(particleOptions, rayCastVec));
+//                this.particles.forEach(particleOptions -> displayParticles(particleOptions, rayCastVec));
+//                this.displayParticles(rayCast);
+                for (ParticleOptions particleOptions : this.particles)
+                {
+                    this.displayParticles(this.level, particleOptions, rayCast);
+                }
             }
         }
     }

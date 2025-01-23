@@ -30,6 +30,12 @@ public class ClientRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Cl
         super(level, startPos, entityFilter, entityClazz, blockClazzes);
     }
 
+    @Override
+    void displayParticles(ClientLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
+    {
+        level.addParticle(particleOptions, true, rayCastPos.x, rayCastPos.y, rayCastPos.z, 0.0 ,0.0, 0.0);
+    }
+
     /**
      * Creates a new {@link ClientRayCast}
      * @param clientLevel The {@link ClientLevel} to perform the {@link ClientRayCast} on
@@ -43,9 +49,4 @@ public class ClientRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Cl
         return new ClientRayCast<>(clientLevel, startPos, entityFilter, entityClazz, blockClazzes);
     }
 
-    @Override
-    void displayParticles(ParticleOptions particle, Vec3 rayCastPos)
-    {
-        this.level.addParticle(particle, true, rayCastPos.x, rayCastPos.y, rayCastPos.z, 0.0, 0.0, 0.0);
-    }
 }
