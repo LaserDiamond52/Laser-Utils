@@ -132,9 +132,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     private BSR blockStateHitReturnObj;
 
     /**
-     * The current {@link BlockPos} in the {@link RayCast}
+     * The current {@link Vec3} position in the {@link RayCast}
      */
-    private BlockPos currentBlockPos;
+    private Vec3 currentPosition;
 
     /**
      * Creates an Axis Aligned Bounding Box centered at the position of the {@link LivingEntity} in the shape of a cube
@@ -176,7 +176,7 @@ public class RayCast<E extends Entity, ER, BSR> {
         this.blockStateHitFunction = null;
         this.entityHitReturnObj = null;
         this.blockStateHitReturnObj = null;
-        this.currentBlockPos = null;
+        this.currentPosition = null;
     }
 
     /**
@@ -389,7 +389,7 @@ public class RayCast<E extends Entity, ER, BSR> {
      */
     private void rayCast(Vec3 rayCastVec, double distance)
     {
-        this.currentBlockPos = null; // Reset current block position
+        this.currentPosition = null; // Reset current block position
 
         // Clear out lists if they aren't empty and persistence is false
         if (!this.hitEntities.isEmpty() && !this.hitEntitiesPersistence)
@@ -407,8 +407,8 @@ public class RayCast<E extends Entity, ER, BSR> {
             Vec3 rayCast = this.startPos.add(rayCastVec.scale(i));
             AABB aabb = new AABB(rayCast.subtract(this.stepSize, this.stepSize, this.stepSize), rayCast.add(this.stepSize, this.stepSize, this.stepSize));
 
-            this.currentBlockPos = new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z); // Assign our current block position
-            BlockState blockState = this.serverLevel.getBlockState(this.currentBlockPos);
+            this.currentPosition = new Vec3(rayCast.x, rayCast.y, rayCast.z); // Assign our current position
+            BlockState blockState = this.serverLevel.getBlockState(new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z));
             Block hitBlock = blockState.getBlock();
 
             if (!this.blockClazzes.contains(hitBlock.getClass())) // Is the block black-listed?
@@ -478,13 +478,13 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      *
-     * @return The current {@link BlockPos} in the {@link RayCast}.
+     * @return The current {@link Vec3} position in the {@link RayCast}.
      * Returns null if the {@link RayCast} has not been fired.
-     * Returns the furthest {@link BlockPos} reached by a {@link RayCast} if called after being fired.
+     * Returns the furthest {@link Vec3} position reached by a {@link RayCast} if called after being fired.
      */
-    public BlockPos getCurrentBlockPos()
+    public Vec3 getCurrentPosition()
     {
-        return currentBlockPos;
+        return currentPosition;
     }
 
     /**

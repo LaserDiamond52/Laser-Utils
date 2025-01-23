@@ -10,10 +10,7 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.laserdiamond.laserutils.client.LUKeyBindings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -72,18 +69,18 @@ public interface DurationAbilityItem extends AbilityItem {
 
                 activeMap.forEach((uuid, durationAbilities) ->
                 {
-                    for (DurationAbility durationAbility : durationAbilities)
+                    Iterator<DurationAbility> activeAbilities = durationAbilities.iterator();
+                    while (activeAbilities.hasNext())
                     {
-                        DurationAbilityItem abilityItem = durationAbility.abilityItem; // ability item
-                        int endTime = durationAbility.tickEndTime; // end time in ticks of the attack
+                        DurationAbility durationAbility = activeAbilities.next();
+                        int endTime = durationAbility.tickEndTime;
 
-                        abilityItem.whileAbilityActive(event); // run ability
+                        durationAbility.abilityItem.whileAbilityActive(event);
 
-                        if (endTime < tickTime) // Is the ability over?
+                        if (endTime < tickTime)
                         {
-                            activeMap.removeAbility(player, durationAbility); // Remove from player's list of active abilities
+                            activeAbilities.remove();
                         }
-
                     }
                 });
 
