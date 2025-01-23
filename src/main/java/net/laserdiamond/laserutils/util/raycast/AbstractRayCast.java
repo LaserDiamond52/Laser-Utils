@@ -1,11 +1,11 @@
-package net.laserdiamond.laserutils.util;
+package net.laserdiamond.laserutils.util.raycast;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -17,17 +17,15 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-// TODO: Create a method that fires a ray cast in a circle?
-
 /**
- * Class used for creating ray casts/lasers.
- * Any methods that affect the functionality of the {@link RayCast} should be called before invoking {@link RayCast#fireAtVec3D(Vec3, double)} or {@link RayCast#fireInDirection(Vec3, double)}.
+ * Root class used for creating ray casts/lasers.
+ * Any methods that affect the functionality of the {@link AbstractRayCast} should be called before invoking {@link AbstractRayCast#fireAtVec3D(Vec3, double)} or {@link AbstractRayCast#fireInDirection(Vec3, double)}.
  * Example:
  * <pre>{@code
  *
  * private void fireLaser(ServerLevel level, LivingEntity entity, Vec3 eyePos, Vec3 destination)
  * {
- *     RayCast.<LivingEntity, LivingEntity, Float>create(level, eyePos, Predicates.alwaysTrue(), LivingEntity.class, List.of())
+ *     ServerRayCast.<LivingEntity, LivingEntity, Float>create(level, eyePos, Predicates.alwaysTrue(), LivingEntity.class, List.of())
  *              .{...} // Call methods to modify step increment, particles, etc. here, before either of the following two method calls below
  *              .fireAtVec3D(destination, 10)
  *              .fireInDirection(entity.getLookAngle(), 30);
@@ -39,102 +37,102 @@ import java.util.function.Predicate;
  * @param <ER> The {@link Object} type to return when an entity is hit
  * @param <BSR> The {@link Object} type to return when a block state is hit
  */
-public class RayCast<E extends Entity, ER, BSR> {
+public abstract class AbstractRayCast<L extends Level, E extends Entity, ER, BSR> {
 
     /**
-     * The {@link ServerLevel} to perform the {@link RayCast} on
+     * The {@link Level} type to perform the {@link AbstractRayCast} on
      */
-    private final ServerLevel serverLevel;
+    protected final L level;
 
     /**
-     * The starting position of the {@link RayCast} as a {@link Vec3}
+     * The starting position of the {@link AbstractRayCast} as a {@link Vec3}
      */
-    private final Vec3 startPos;
+    protected final Vec3 startPos;
 
     /**
-     * The step increment of the {@link RayCast}
+     * The step increment of the {@link AbstractRayCast}
      */
-    private double stepIncrement;
+    protected double stepIncrement;
 
     /**
-     * The step size of the {@link RayCast}
+     * The step size of the {@link AbstractRayCast}
      */
-    private double stepSize;
+    protected double stepSize;
 
     /**
      * The entity filter {@link Predicate}
      */
-    private final Predicate<E> entityFilter;
+    protected final Predicate<E> entityFilter;
 
     /**
      * The {@link Entity} clazz to target
      */
-    private final Class<E> entityClazz;
+    protected final Class<E> entityClazz;
 
     /**
-     * The {@link Block} classes to blacklist from the results of the {@link RayCast}
+     * The {@link Block} classes to blacklist from the results of the {@link AbstractRayCast}
      */
-    private final List<Class<? extends Block>> blockClazzes;
+    protected final List<Class<? extends Block>> blockClazzes;
 
     /**
-     * The {@link ParticleOptions}s to display at each step of the {@link RayCast}
+     * The {@link ParticleOptions}s to display at each step of the {@link AbstractRayCast}
      */
-    private final List<ParticleOptions> particles;
+    protected final List<ParticleOptions> particles;
 
     /**
-     * Determines if the {@link RayCast} pierces blocks
+     * Determines if the {@link AbstractRayCast} pierces blocks
      */
-    private boolean pierceBlocks;
+    protected boolean pierceBlocks;
 
     /**
-     * Determines if the {@link RayCast} pierces entities
+     * Determines if the {@link AbstractRayCast} pierces entities
      */
-    private boolean pierceEntities;
+    protected boolean pierceEntities;
 
     /**
-     * The {@link List} of hit entities after a {@link RayCast} has been fired
+     * The {@link List} of hit entities after a {@link AbstractRayCast} has been fired
      */
-    private final List<E> hitEntities;
+    protected final List<E> hitEntities;
 
     /**
-     * The {@link List} of hit {@link BlockState}s after a {@link RayCast} has been fired
+     * The {@link List} of hit {@link BlockState}s after a {@link AbstractRayCast} has been fired
      */
-    private final List<BlockState> hitBlockStates;
+    protected final List<BlockState> hitBlockStates;
 
     /**
-     * Determines if the {@link List} of hit entities is cleared before firing again
+     * Determines if {@link  #hitEntities} is cleared before firing again
      */
-    private boolean hitEntitiesPersistence;
+    protected boolean hitEntitiesPersistence;
 
     /**
-     * Determines if the {@link List} of hit {@link BlockState}s is cleared before firing again
+     * Determines if {@link  #hitBlockStates} is cleared before firing again
      */
-    private boolean hitBlockStatesPersistence;
-
-    /**
-     * A {@link Function} to run when an {@link Entity} is hit.
-     */
-    private Function<E, ER> entityHitFunction;
+    protected boolean hitBlockStatesPersistence;
 
     /**
      * A {@link Function} to run when a {@link BlockState} is hit
      */
-    private Function<BlockState, BSR> blockStateHitFunction;
+    protected Function<BlockState, BSR> blockStateHitFunction;
 
     /**
-     * The {@link ER} to return when an {@link Entity} is hit
+     * A {@link Function} to run when an {@link Entity} is hit.
      */
-    private ER entityHitReturnObj;
+    protected Function<E, ER> entityHitFunction;
 
     /**
      * The {@link BSR} to return when a {@link BlockState} is hit
      */
-    private BSR blockStateHitReturnObj;
+    protected BSR blockStateHitReturnObj;
 
     /**
-     * The current {@link Vec3} position in the {@link RayCast}
+     * The {@link ER} to return when an {@link Entity} is hit
      */
-    private Vec3 currentPosition;
+    protected ER entityHitReturnObj;
+
+    /**
+     * The current {@link Vec3} position in the {@link AbstractRayCast}
+     */
+    protected Vec3 currentPosition;
 
     /**
      * Creates an Axis Aligned Bounding Box centered at the position of the {@link LivingEntity} in the shape of a cube
@@ -148,17 +146,9 @@ public class RayCast<E extends Entity, ER, BSR> {
         return new AABB(new Vec3(center.getBlockX() - range, center.getBlockY() - range, center.getBlockZ() - range), new Vec3(center.getBlockX() + range, center.getBlockY() + range, center.getBlockZ() + range));
     }
 
-    /**
-     * Creates a new {@link RayCast}
-     * @param serverLevel The {@link ServerLevel} to perform the {@link RayCast} on
-     * @param startPos The {@link Vec3} starting position of the {@link RayCast}
-     * @param entityFilter The {@link Entity} filter {@link Predicate}
-     * @param entityClazz The {@link Entity} clazz to target
-     * @param blockClazzes The {@link Block} clazz to blacklist
-     */
-    private RayCast(ServerLevel serverLevel, Vec3 startPos, Predicate<E> entityFilter, Class<E> entityClazz, List<Class<? extends Block>> blockClazzes)
+    protected AbstractRayCast(L level, Vec3 startPos, Predicate<E> entityFilter, Class<E> entityClazz, List<Class<? extends Block>> blockClazzes)
     {
-        this.serverLevel = serverLevel;
+        this.level = level;
         this.startPos = startPos;
         this.entityFilter = entityFilter;
         this.entityClazz = entityClazz;
@@ -170,31 +160,25 @@ public class RayCast<E extends Entity, ER, BSR> {
         this.hitBlockStates = new ArrayList<>();
         this.pierceBlocks = false;
         this.pierceEntities = false;
-        this.hitEntitiesPersistence = false;
         this.hitBlockStatesPersistence = false;
-        this.entityHitFunction = null;
+        this.hitEntitiesPersistence = false;
         this.blockStateHitFunction = null;
-        this.entityHitReturnObj = null;
+        this.entityHitFunction = null;
         this.blockStateHitReturnObj = null;
+        this.entityHitReturnObj = null;
         this.currentPosition = null;
     }
 
     /**
-     * Creates a new {@link RayCast}
-     * @param serverLevel The {@link ServerLevel} to perform the {@link RayCast} on
-     * @param startPos The {@link Vec3} starting position of the {@link RayCast}
-     * @param entityFilter The {@link Entity} filter {@link Predicate}
-     * @param entityClazz The {@link Entity} clazz to target
-     * @param blockClazzes The {@link Block} clazz to blacklist
+     * Abstract method used to define how particles should be displayed for each subclass.
+     * @param particle The {@link ParticleOptions} being displayed at each step of the {@link AbstractRayCast}
+     * @param rayCastPos The {@link Vec3} step position of where the {@link ParticleOptions} are being displayed in the {@link AbstractRayCast}
      */
-    public static <E extends Entity, ER, BSR> RayCast<E, ER, BSR> createRayCast(ServerLevel serverLevel, Vec3 startPos, Predicate<E> entityFilter, Class<E> entityClazz, List<Class<? extends Block>> blockClazzes)
-    {
-        return new RayCast<>(serverLevel, startPos, entityFilter, entityClazz, blockClazzes);
-    }
+    abstract void displayParticles(ParticleOptions particle, Vec3 rayCastPos);
 
     /**
      * Gets the {@link Object} to return when the {@link Function} of this class is called
-     * @return The {@link Object} returned from the {@link Function} of this class when an entity is hit. Returns null if no entities have been hit, the {@link RayCast} has not been fired, or if a value has not been set for it.
+     * @return The {@link Object} returned from the {@link Function} of this class when an entity is hit. Returns null if no entities have been hit, the {@link AbstractRayCast} has not been fired, or if a value has not been set for it.
      */
     public ER getEntityHitReturnObj()
     {
@@ -203,7 +187,7 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Gets the {@link Object} to return when the {@link Function} of this class is called
-     * @return The {@link Object} returned from the {@link Function} of this class when block state is hit. Returns null if no block states have been hit, the {@link RayCast} has not been fired, or if a value has not been set for it.
+     * @return The {@link Object} returned from the {@link Function} of this class when block state is hit. Returns null if no block states have been hit, the {@link AbstractRayCast} has not been fired, or if a value has not been set for it.
      */
     public BSR getBlockStateHitReturnObj()
     {
@@ -213,9 +197,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     /**
      * Sets the initial value of the {@link Object} to return when an entity is hit
      * @param obj The {@link Object}
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setEntityHitReturnObj(ER obj)
+    public AbstractRayCast<L, E, ER, BSR> setEntityHitReturnObj(ER obj)
     {
         this.entityHitReturnObj = obj;
         return this;
@@ -224,9 +208,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     /**
      * Sets the initial value of the {@link Object} to return when a block state is hit
      * @param obj The {@link Object}
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setBlockStateHitReturnObj(BSR obj)
+    public AbstractRayCast<L, E, ER, BSR> setBlockStateHitReturnObj(BSR obj)
     {
         this.blockStateHitReturnObj = obj;
         return this;
@@ -234,9 +218,9 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Allows the ray cast to go through blocks
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setCanPierceBlocks()
+    public AbstractRayCast<L, E, ER, BSR> setCanPierceBlocks()
     {
         this.pierceBlocks = true;
         return this;
@@ -244,9 +228,9 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Allows the ray cast to go through entities
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setCanPierceEntities()
+    public AbstractRayCast<L, E, ER, BSR> setCanPierceEntities()
     {
         this.pierceEntities = true;
         return this;
@@ -254,10 +238,10 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Entities hit by the ray cast will persist in the hit entities results after another ray cast is fired.
-     * This is useful for if multiple ray casts need to be fired from the same {@link RayCast} instance.
-     * @return {@link RayCast} instance
+     * This is useful for if multiple ray casts need to be fired from the same {@link AbstractRayCast} instance.
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setAllowHitEntitiesPersistence()
+    public AbstractRayCast<L, E, ER, BSR> setAllowHitEntitiesPersistence()
     {
         this.hitEntitiesPersistence = true;
         return this;
@@ -265,10 +249,10 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Entities hit by the ray cast will persist in the hit block states results after another ray cast is fired.
-     * This is useful for if multiple ray casts need to be fire from the same {@link RayCast} instance
-     * @return {@link RayCast} instance
+     * This is useful for if multiple ray casts need to be fire from the same {@link AbstractRayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> setAllowHitBlockStatesPersistence()
+    public AbstractRayCast<L, E, ER, BSR> setAllowHitBlockStatesPersistence()
     {
         this.hitBlockStatesPersistence = true;
         return this;
@@ -280,10 +264,10 @@ public class RayCast<E extends Entity, ER, BSR> {
      * and a larger step increment will result in a longer firing distance.
      * Visible if particles are not null
      * @param stepIncrement The step increment
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      * @throws IllegalArgumentException If the step increment entered is equal to or less than 0
      */
-    public RayCast<E, ER, BSR> setStepIncrement(double stepIncrement) throws IllegalArgumentException
+    public AbstractRayCast<L, E, ER, BSR> setStepIncrement(double stepIncrement) throws IllegalArgumentException
     {
         if (stepIncrement <= 0)
         {
@@ -295,14 +279,14 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Sets the step size of the ray cast.
-     * A larger step size can result in a {@link RayCast} being more likely to hit a {@link LivingEntity} (a {@link Block} hit is based on the {@link BlockPos} of the step and NOT the step size.
-     * This does not affect the {@link RayCast#stepIncrement}.
+     * A larger step size can result in a {@link AbstractRayCast} being more likely to hit a {@link LivingEntity} (a {@link Block} hit is based on the {@link BlockPos} of the step and NOT the step size.
+     * This does not affect the {@link AbstractRayCast#stepIncrement}.
      * The size of the step isn't displayed by particles
      * @param stepSize The step size
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      * @throws IllegalArgumentException If the step size entered is less than 0
      */
-    public RayCast<E, ER, BSR> setStepSize(double stepSize) throws IllegalArgumentException
+    public AbstractRayCast<L, E, ER, BSR> setStepSize(double stepSize) throws IllegalArgumentException
     {
         if (stepSize < 0)
         {
@@ -315,9 +299,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     /**
      * Adds a particle to be displayed at each step of the ray cast
      * @param particle The {@link ParticleOptions} to display at each step
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> addParticle(ParticleOptions particle)
+    public AbstractRayCast<L, E, ER, BSR> addParticle(ParticleOptions particle)
     {
         this.particles.add(particle);
         return this;
@@ -326,9 +310,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     /**
      * Removes a particle to be displayed at each step of the ray cast
      * @param particle the {@link ParticleOptions} to remove from being displayed
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> removeParticle(ParticleOptions particle)
+    public AbstractRayCast<L, E, ER, BSR> removeParticle(ParticleOptions particle)
     {
         this.particles.remove(particle);
         return this;
@@ -337,9 +321,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     /**
      * Adds a {@link Collection} of particles to be displayed at each step of the ray cast
      * @param particleTypes The {@link ParticleOptions}s to display at each step of the ray cast
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> addParticles(Collection<? extends ParticleOptions> particleTypes)
+    public AbstractRayCast<L, E, ER, BSR> addParticles(Collection<? extends ParticleOptions> particleTypes)
     {
         this.particles.addAll(particleTypes);
         return this;
@@ -347,21 +331,21 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      * Removes all particles to be displayed at each step of the ray cast
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> clearParticles()
+    public AbstractRayCast<L, E, ER, BSR> clearParticles()
     {
         this.particles.clear();
         return this;
     }
 
     /**
-     * Fires the {@link RayCast} in the direction of the ray
+     * Fires the {@link AbstractRayCast} in the direction of the ray
      * @param ray The ray to shoot the ray cast from
-     * @param distance The distance of the {@link RayCast}
-     * @return {@link RayCast} instance
+     * @param distance The distance of the {@link AbstractRayCast}
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> fireInDirection(Vec3 ray, double distance)
+    public AbstractRayCast<L, E, ER, BSR> fireInDirection(Vec3 ray, double distance)
     {
         Vec3 normalizeRay = ray.normalize();
         rayCast(normalizeRay, distance);
@@ -369,12 +353,12 @@ public class RayCast<E extends Entity, ER, BSR> {
     }
 
     /**
-     * Fires the {@link RayCast} to the destination {@link Vec3}, and past if the overshoot distance is greater than 0
-     * @param destination The destination of the {@link RayCast}
+     * Fires the {@link AbstractRayCast} to the destination {@link Vec3}, and past if the overshoot distance is greater than 0
+     * @param destination The destination of the {@link AbstractRayCast}
      * @param overshootDistance The distance to overshoot after reaching the destination vector
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> fireAtVec3D(Vec3 destination, double overshootDistance)
+    public AbstractRayCast<L, E, ER, BSR> fireAtVec3D(Vec3 destination, double overshootDistance)
     {
         Vec3 sub = destination.subtract(this.startPos);
         Vec3 normalizeDestination = sub.normalize();
@@ -383,9 +367,9 @@ public class RayCast<E extends Entity, ER, BSR> {
     }
 
     /**
-     * Helper method that contains the logic of the {@link RayCast}
-     * @param rayCastVec The starting position of the {@link RayCast}
-     * @param distance The distance for the {@link RayCast} to travel
+     * Helper method that contains the logic of the {@link AbstractRayCast}
+     * @param rayCastVec The starting position of the {@link AbstractRayCast}
+     * @param distance The distance for the {@link AbstractRayCast} to travel
      */
     private void rayCast(Vec3 rayCastVec, double distance)
     {
@@ -408,7 +392,7 @@ public class RayCast<E extends Entity, ER, BSR> {
             AABB aabb = new AABB(rayCast.subtract(this.stepSize, this.stepSize, this.stepSize), rayCast.add(this.stepSize, this.stepSize, this.stepSize));
 
             this.currentPosition = rayCast; // Assign our current position
-            BlockState blockState = this.serverLevel.getBlockState(new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z));
+            BlockState blockState = this.level.getBlockState(new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z));
             Block hitBlock = blockState.getBlock();
 
             if (!this.blockClazzes.contains(hitBlock.getClass())) // Is the block black-listed?
@@ -428,7 +412,7 @@ public class RayCast<E extends Entity, ER, BSR> {
                 return; // Pierce blocks is false and the blockState hit is solid
             }
 
-            for (E e : this.serverLevel.getEntitiesOfClass(this.entityClazz, aabb, this.entityFilter)) // Loop through all entities that intersect with the ray cast bounding box
+            for (E e : this.level.getEntitiesOfClass(this.entityClazz, aabb, this.entityFilter)) // Loop through all entities that intersect with the ray cast bounding box
             {
                 AABB entityBB = e.getBoundingBox(); // entity bounding box
                 if (entityBB.intersects(aabb) && !this.hitEntities.contains(e)) // Ensure that the entity's bounding box intersects with the ray cast bounding box, and that we haven't already hit this entity
@@ -449,28 +433,28 @@ public class RayCast<E extends Entity, ER, BSR> {
 
             if (!this.particles.isEmpty()) // Are there any particles to display?
             {
-                this.particles.forEach(particleType -> this.serverLevel.sendParticles(particleType, rayCast.x, rayCast.y, rayCast.z, 1, 0.0, 0.0, 0.0, 0.0)); // Display particles
+                this.particles.forEach(particleOptions -> displayParticles(particleOptions, rayCastVec));
             }
         }
     }
 
     /**
-     * Sets the entity {@link Function} to run directly when an entity is hit by the {@link RayCast}. The result of the {@link Function} is assigned to its respective field.
+     * Sets the entity {@link Function} to run directly when an entity is hit by the {@link AbstractRayCast}. The result of the {@link Function} is assigned to its respective field.
      * @param function The {@link Function} to run when an entity is hit
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> onEntityHitFunction(Function<E, ER> function)
+    public AbstractRayCast<L, E, ER, BSR> onEntityHitFunction(Function<E, ER> function)
     {
         this.entityHitFunction = function;
         return this;
     }
 
     /**
-     * Sets the block state {@link Function} to run directly when a block state is hit by the {@link RayCast}. The result of the {@link Function} is assigned to its respective field.
+     * Sets the block state {@link Function} to run directly when a block state is hit by the {@link AbstractRayCast}. The result of the {@link Function} is assigned to its respective field.
      * @param function The {@link Function} to run when a block state is hit
-     * @return {@link RayCast} instance
+     * @return {@link AbstractRayCast} instance
      */
-    public RayCast<E, ER, BSR> onBlockStateHitFunction(Function<BlockState, BSR> function)
+    public AbstractRayCast<L, E, ER, BSR> onBlockStateHitFunction(Function<BlockState, BSR> function)
     {
         this.blockStateHitFunction = function;
         return this;
@@ -478,9 +462,9 @@ public class RayCast<E extends Entity, ER, BSR> {
 
     /**
      *
-     * @return The current {@link Vec3} position in the {@link RayCast}.
-     * Returns null if the {@link RayCast} has not been fired.
-     * Returns the furthest {@link Vec3} position reached by a {@link RayCast} if called after being fired.
+     * @return The current {@link Vec3} position in the {@link AbstractRayCast}.
+     * Returns null if the {@link AbstractRayCast} has not been fired.
+     * Returns the furthest {@link Vec3} position reached by a {@link AbstractRayCast} if called after being fired.
      */
     public Vec3 getCurrentPosition()
     {
@@ -488,7 +472,7 @@ public class RayCast<E extends Entity, ER, BSR> {
     }
 
     /**
-     * Gets a copy of the {@link ArrayList} that contains all the hit entities from the {@link RayCast}.
+     * Gets a copy of the {@link ArrayList} that contains all the hit entities from the {@link AbstractRayCast}.
      * This {@link ArrayList} is cleared and refilled with all hit entities when a new ray cast is fired.
      * @return An {@link ArrayList} containing all the hit entities in the ray cast
      */
@@ -498,7 +482,7 @@ public class RayCast<E extends Entity, ER, BSR> {
     }
 
     /**
-     * Gets a copy of the {@link ArrayList} that contains all the hit block states from the {@link RayCast}.
+     * Gets a copy of the {@link ArrayList} that contains all the hit block states from the {@link AbstractRayCast}.
      * This {@link ArrayList} is cleared and refilled with all hit entities when a new ray cast is fired.
      * @return An {@link ArrayList} containing all the hit block states in the ray cast
      */
@@ -506,4 +490,6 @@ public class RayCast<E extends Entity, ER, BSR> {
     {
         return new ArrayList<>(this.hitBlockStates);
     }
+
+
 }
