@@ -407,7 +407,7 @@ public class RayCast<E extends Entity, ER, BSR> {
             Vec3 rayCast = this.startPos.add(rayCastVec.scale(i));
             AABB aabb = new AABB(rayCast.subtract(this.stepSize, this.stepSize, this.stepSize), rayCast.add(this.stepSize, this.stepSize, this.stepSize));
 
-            this.currentPosition = new Vec3(rayCast.x, rayCast.y, rayCast.z); // Assign our current position
+            this.currentPosition = rayCast; // Assign our current position
             BlockState blockState = this.serverLevel.getBlockState(new BlockPos((int) rayCast.x, (int) rayCast.y, (int) rayCast.z));
             Block hitBlock = blockState.getBlock();
 
