@@ -30,7 +30,7 @@ public class ServerRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Se
     }
 
     @Override
-    void displayParticles(ServerLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
+    protected void displayParticles(ServerLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
     {
         level.sendParticles(particleOptions, rayCastPos.x, rayCastPos.y, rayCastPos.z, 1, 0.0, 0.0, 0.0, 0.0);
     }

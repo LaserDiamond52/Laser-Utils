@@ -178,7 +178,7 @@ public abstract class AbstractRayCast<L extends Level, E extends Entity, ER, BSR
      * @param particleOptions The {@link ParticleOptions} being displayed at each step of the {@link AbstractRayCast}
      * @param rayCastPos The {@link Vec3} step position of where the {@link ParticleOptions} are being displayed in the {@link AbstractRayCast}
      */
-    abstract void displayParticles(L level, ParticleOptions particleOptions, Vec3 rayCastPos);
+    protected abstract void displayParticles(L level, ParticleOptions particleOptions, Vec3 rayCastPos);
 
     /**
      * Gets the {@link Object} to return when the {@link Function} of this class is called

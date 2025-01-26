@@ -31,7 +31,7 @@ public class ClientRayCast<E extends Entity, ER, BSR> extends AbstractRayCast<Cl
     }
 
     @Override
-    void displayParticles(ClientLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
+    protected void displayParticles(ClientLevel level, ParticleOptions particleOptions, Vec3 rayCastPos)
     {
         level.addParticle(particleOptions, true, rayCastPos.x, rayCastPos.y, rayCastPos.z, 0.0 ,0.0, 0.0);
     }
