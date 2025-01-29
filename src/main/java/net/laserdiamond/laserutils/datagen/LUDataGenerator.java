@@ -151,17 +151,26 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
     /**
      * @return The {@link Item} {@link DeferredRegister} to create assets for
      */
-    protected abstract DeferredRegister<Item> itemDeferredRegister();
+    protected DeferredRegister<Item> itemDeferredRegister()
+    {
+        return null;
+    }
 
     /**
      * @return The {@link Block} {@link DeferredRegister} to create asset for
      */
-    protected abstract DeferredRegister<Block> blockDeferredRegister();
+    protected DeferredRegister<Block> blockDeferredRegister()
+    {
+        return null;
+    }
 
     /**
      * @return The {@link EntityType} {@link DeferredRegister} to create assets for
      */
-    protected abstract DeferredRegister<EntityType<?>> entityTypeDeferredRegister();
+    protected DeferredRegister<EntityType<?>> entityTypeDeferredRegister()
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUBlockStateProvider} to use to create block states
