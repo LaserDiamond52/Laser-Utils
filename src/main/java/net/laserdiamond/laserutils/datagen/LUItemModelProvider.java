@@ -15,6 +15,7 @@ import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 
@@ -58,7 +59,7 @@ public class LUItemModelProvider<T extends LUDataGenerator<T>> extends ItemModel
     }
 
     @Override
-    public DeferredRegister<Item> objectRegistry() {
+    public @NotNull DeferredRegister<Item> objectRegistry() {
         return this.dataGenerator.itemDeferredRegister();
     }
 

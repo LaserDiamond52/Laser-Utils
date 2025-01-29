@@ -8,6 +8,7 @@ import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Block State provider
@@ -35,7 +36,7 @@ public class LUBlockStateProvider<T extends LUDataGenerator<T>> extends BlockSta
     }
 
     @Override
-    public DeferredRegister<Block> objectRegistry() {
+    public @NotNull DeferredRegister<Block> objectRegistry() {
         return this.dataGenerator.blockDeferredRegister();
     }
 

@@ -23,6 +23,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -108,7 +109,7 @@ public abstract class LULootTables<T extends LUDataGenerator<T>> {
         }
 
         @Override
-        public DeferredRegister<Block> objectRegistry() {
+        public @NotNull DeferredRegister<Block> objectRegistry() {
             return this.dataGenerator.blockDeferredRegister();
         }
     }
@@ -170,7 +171,7 @@ public abstract class LULootTables<T extends LUDataGenerator<T>> {
         }
 
         @Override
-        public DeferredRegister<EntityType<?>> objectRegistry() {
+        public @NotNull DeferredRegister<EntityType<?>> objectRegistry() {
             return this.dataGenerator.entityTypeDeferredRegister();
         }
     }

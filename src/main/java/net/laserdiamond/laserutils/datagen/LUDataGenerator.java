@@ -13,6 +13,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -84,17 +85,58 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
         final ExistingFileHelper existingFileHelper = event.getExistingFileHelper(); // Existing File Helper
         final CompletableFuture<HolderLookup.Provider> lookUpProvider = event.getLookupProvider(); // Look Up Provider
 
-        dataGenerator.addProvider(event.includeClient(), this.lootTables(packOutput, lookUpProvider)); // Loot Tables
-        dataGenerator.addProvider(event.includeServer(), this.recipeProvider(packOutput, lookUpProvider)); // Recipes
+        LootTableProvider lootTableProvider = this.lootTables(packOutput, lookUpProvider);
+        if (lootTableProvider != null) // Do not create if null
+        {
+            dataGenerator.addProvider(event.includeClient(), this.lootTables(packOutput, lookUpProvider)); // Loot Tables
+        }
 
-        dataGenerator.addProvider(event.includeClient(), this.itemModelProvider(packOutput, existingFileHelper)); // Item Model Provider
-        dataGenerator.addProvider(event.includeClient(), this.blockStateProvider(packOutput, existingFileHelper)); // Block State Provider
+        LURecipeProvider<T> recipeProvider = this.recipeProvider(packOutput, lookUpProvider);
+        if (recipeProvider != null && this.itemDeferredRegister() != null) // Do not create if provider is null or if item registry is null
+        {
+            dataGenerator.addProvider(event.includeServer(), recipeProvider); // Recipes
+        }
 
-        this.blockTags = dataGenerator.addProvider(event.includeServer(), this.blockTags(packOutput, lookUpProvider, existingFileHelper)); // Block Tags
-        dataGenerator.addProvider(event.includeServer(), this.itemTags(packOutput, lookUpProvider, existingFileHelper)); // Item Tags
-        dataGenerator.addProvider(event.includeServer(), this.entityTypeTags(packOutput, lookUpProvider, existingFileHelper)); // Entity Tags
-        dataGenerator.addProvider(event.includeServer(), this.enchantmentTypeTags(packOutput, lookUpProvider)); // Enchantment Tags
-        dataGenerator.addProvider(event.includeServer(), this.biomeTags(packOutput, lookUpProvider));
+        LUItemModelProvider<T> itemModelProvider = this.itemModelProvider(packOutput, existingFileHelper);
+        if (itemModelProvider != null && this.itemDeferredRegister() != null) // Do not create if provider is null or if item registry is null
+        {
+            dataGenerator.addProvider(event.includeClient(), itemModelProvider); // Item Model Provider
+        }
+
+        LUBlockStateProvider<T> blockStateProvider = this.blockStateProvider(packOutput, existingFileHelper);
+        if (blockStateProvider != null && this.blockDeferredRegister() != null) // Do not create if provider is null or if block registry is null
+        {
+            dataGenerator.addProvider(event.includeClient(), blockStateProvider); // Block State Provider
+        }
+
+        LUTagProvider.BlockTags<T> blockTags = this.blockTags(packOutput, lookUpProvider, existingFileHelper);
+        if (blockTags != null) // Do not create if null
+        {
+            this.blockTags = dataGenerator.addProvider(event.includeServer(), blockTags); // Block Tags
+            LUTagProvider.ItemTags<T> itemTags = this.itemTags(packOutput, lookUpProvider, existingFileHelper);
+            if (itemTags != null) // Do not create if null
+            {
+                dataGenerator.addProvider(event.includeServer(), itemTags); // Item Tags
+            }
+        }
+
+        LUTagProvider.EntityTypeTags<T> entityTypeTags = this.entityTypeTags(packOutput, lookUpProvider, existingFileHelper);
+        if (entityTypeTags != null && this.entityTypeDeferredRegister() != null) // Do not create if provider is null or if entity registry is null
+        {
+            dataGenerator.addProvider(event.includeServer(), entityTypeTags); // Entity Tags
+        }
+
+        LUTagProvider.EnchantmentTypeTags<T> enchantmentTypeTags = this.enchantmentTypeTags(packOutput, lookUpProvider);
+        if (enchantmentTypeTags != null) // Do not create if null
+        {
+            dataGenerator.addProvider(event.includeServer(), enchantmentTypeTags); // Enchantment Tags
+        }
+
+        LUTagProvider.BiomeTags<T> biomeTags = this.biomeTags(packOutput, lookUpProvider);
+        if (biomeTags != null) // Do not create if null
+        {
+            dataGenerator.addProvider(event.includeServer(), biomeTags); // Biome Tags
+        }
 
         dataGenerator.addProvider(event.includeClient(), this.languageProvider(packOutput)); // Lang
         this.additionalGatherData(event);
@@ -109,19 +151,16 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
     /**
      * @return The {@link Item} {@link DeferredRegister} to create assets for
      */
-    @NotNull
     protected abstract DeferredRegister<Item> itemDeferredRegister();
 
     /**
      * @return The {@link Block} {@link DeferredRegister} to create asset for
      */
-    @NotNull
     protected abstract DeferredRegister<Block> blockDeferredRegister();
 
     /**
      * @return The {@link EntityType} {@link DeferredRegister} to create assets for
      */
-    @NotNull
     protected abstract DeferredRegister<EntityType<?>> entityTypeDeferredRegister();
 
     /**
@@ -130,8 +169,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param existingFileHelper The {@link ExistingFileHelper} of the {@link GatherDataEvent}
      * @return The {@link LUBlockStateProvider} to use to create block states
      */
-    @NotNull
-    protected abstract LUBlockStateProvider<T> blockStateProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper);
+    protected LUBlockStateProvider<T> blockStateProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUItemModelProvider} to use to create item models
@@ -139,8 +180,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param existingFileHelper The {@link ExistingFileHelper} of the {@link GatherDataEvent}
      * @return The {@link LUBlockStateProvider} to use to create block states
      */
-    @NotNull
-    protected abstract LUItemModelProvider<T> itemModelProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper);
+    protected LUItemModelProvider<T> itemModelProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LULanguageProvider} to use to create the translation files
@@ -156,8 +199,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param lookUpProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link GatherDataEvent}
      * @return The {@link LootTableProvider} to use to create the loot tables
      */
-    @NotNull
-    protected abstract LootTableProvider lootTables(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
+    protected LootTableProvider lootTables(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LURecipeProvider} to use to create crafting recipes
@@ -165,8 +210,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param lookUpProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link GatherDataEvent}
      * @return The {@link LURecipeProvider} to use to create the loot tables
      */
-    @NotNull
-    protected abstract LURecipeProvider<T> recipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
+    protected LURecipeProvider<T> recipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUTagProvider.BlockTags} to use to apply {@link net.minecraft.tags.TagKey}s to blocks
@@ -175,8 +222,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param existingFileHelper The {@link ExistingFileHelper} of the {@link GatherDataEvent}
      * @return The {@link LUTagProvider.BlockTags} to use to apply {@link net.minecraft.tags.TagKey}s to blocks
      */
-    @NotNull
-    protected abstract LUTagProvider.BlockTags<T> blockTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper);
+    protected LUTagProvider.BlockTags<T> blockTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUTagProvider.ItemTags} to use to apply {@link net.minecraft.tags.TagKey} to items
@@ -185,8 +234,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param existingFileHelper The {@link ExistingFileHelper} of the {@link GatherDataEvent}
      * @return The {@link LUTagProvider.ItemTags} to use to apply {@link net.minecraft.tags.TagKey}s to items
      */
-    @NotNull
-    protected abstract LUTagProvider.ItemTags<T> itemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper);
+    protected LUTagProvider.ItemTags<T> itemTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUTagProvider.EntityTypeTags} to use to apply {@link net.minecraft.tags.TagKey}s to entity types
@@ -195,8 +246,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param existingFileHelper The {@link ExistingFileHelper} of the {@link GatherDataEvent}
      * @return The {@link LUTagProvider.EntityTypeTags} to use to apply {@link net.minecraft.tags.TagKey}s to entity types
      */
-    @NotNull
-    protected abstract LUTagProvider.EntityTypeTags<T> entityTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper);
+    protected LUTagProvider.EntityTypeTags<T> entityTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUTagProvider.EnchantmentTypeTags} to use to apply the {@link net.minecraft.tags.TagKey}s to enchantments
@@ -204,8 +257,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param lookUpProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link GatherDataEvent}
      * @return The {@link LUTagProvider.EnchantmentTypeTags} to use to apply {@link net.minecraft.tags.TagKey}s to enchantments
      */
-    @NotNull
-    protected abstract LUTagProvider.EnchantmentTypeTags<T> enchantmentTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
+    protected LUTagProvider.EnchantmentTypeTags<T> enchantmentTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider)
+    {
+        return null;
+    }
 
     /**
      * Specifies the {@link LUTagProvider.BiomeTags} to use to apply the {@link net.minecraft.tags.TagKey}s to biomes
@@ -213,8 +268,10 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @param lookUpProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link GatherDataEvent}
      * @return The {@link LUTagProvider.BiomeTags} to use to apply {@link net.minecraft.tags.TagKey}s to biomes
      */
-    @NotNull
-    protected abstract LUTagProvider.BiomeTags<T> biomeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider);
+    protected LUTagProvider.BiomeTags<T> biomeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider)
+    {
+        return null;
+    }
 
     /**
      * @return The Mod ID of the {@link LUDataGenerator}

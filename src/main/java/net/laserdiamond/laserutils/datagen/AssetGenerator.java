@@ -2,6 +2,7 @@ package net.laserdiamond.laserutils.datagen;
 
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Used by Data Generators of {@link net.laserdiamond.laserutils.LaserUtils} to specify what objects to create assets for
@@ -13,6 +14,7 @@ public interface AssetGenerator<T> {
      * Specifies the {@link DeferredRegister} to generate assets for
      * @return The {@link DeferredRegister} to generate assets for
      */
+    @NotNull
     DeferredRegister<T> objectRegistry();
 
     /**
