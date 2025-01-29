@@ -485,7 +485,7 @@ public class ObjectRegistry {
     {
         if (protectionValues.length != 5)
         {
-            throw new IllegalArgumentException("There must be 5 projection values, and only " + protectionValues.length + " are present");
+            throw new IllegalArgumentException("There must be 5 protection values, and only " + protectionValues.length + " are present");
         }
         ResourceLocation resLoc = ResourceLocation.fromNamespaceAndPath(modId, name);
         List<ArmorMaterial.Layer> layers = List.of(new ArmorMaterial.Layer(resLoc));

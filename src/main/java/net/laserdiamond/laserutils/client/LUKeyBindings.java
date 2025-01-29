@@ -2,6 +2,7 @@ package net.laserdiamond.laserutils.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.laserdiamond.laserutils.LaserUtils;
+import net.laserdiamond.laserutils.event.OnAbilityKeyPressEvent;
 import net.laserdiamond.laserutils.item.equipment.tools.AbilityItem;
 import net.laserdiamond.laserutils.item.equipment.tools.DurationAbilityItem;
 import net.laserdiamond.laserutils.network.ItemAbilityPacket;
@@ -14,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -96,6 +98,7 @@ public class LUKeyBindings {
                 {
                     return;
                 }
+                MinecraftForge.EVENT_BUS.post(new OnAbilityKeyPressEvent(localPlayer, event.getKey(), event.getScanCode(), event.getAction(), event.getModifiers()));
                 if (localPlayer.getMainHandItem().getItem() instanceof DurationAbilityItem abilityItem)
                 {
                     if (abilityItem.cooldownTicks() < 0)
