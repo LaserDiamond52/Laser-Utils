@@ -1,10 +1,13 @@
 package net.laserdiamond.laserutils.network;
 
 import net.laserdiamond.laserutils.LaserUtils;
+import net.laserdiamond.laserutils.capability.AbstractCapability;
+import net.laserdiamond.laserutils.capability.AbstractCapabilityData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.PacketDistributor;
@@ -69,8 +72,8 @@ public class NetworkPackets {
 
     /**
      * Sends a packet to the server
-     * @param channel The {@link SimpleChannel} to send the {@link MSG} through
-     * @param message The {@link MSG} to send to the server
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain MSG message} through
+     * @param message The {@linkplain MSG message} to send to the server
      * @param <MSG> The message type
      */
     public static <MSG> void sendToServer(SimpleChannel channel, MSG message)
@@ -80,8 +83,8 @@ public class NetworkPackets {
 
     /**
      * Sends a packet to a {@link ServerPlayer}
-     * @param channel The {@link SimpleChannel} to send the {@link MSG} through
-     * @param message The {@link MSG} to send to the player
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain MSG message} through
+     * @param message The {@linkplain MSG message} to send to the player
      * @param player The {@link ServerPlayer} receiving the packet
      * @param <MSG> The message type
      */
@@ -92,12 +95,62 @@ public class NetworkPackets {
 
     /**
      * Sends a packet to all clients
-     * @param channel The {@link SimpleChannel} to send the {@link MSG} through
-     * @param message The {@link MSG} to send to the clients
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain MSG message} through
+     * @param message The {@linkplain MSG message} to send to the clients
      * @param <MSG> The message type
      */
     public static <MSG> void sendToAllClients(SimpleChannel channel, MSG message)
     {
         channel.send(message, PacketDistributor.ALL.noArg());
+    }
+
+    /**
+     * Sends a packet to all clients tracking the specified {@linkplain Entity entity}
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain MSG message} through
+     * @param message The {@linkplain MSG message} to send to the clients
+     * @param trackedEntity The {@linkplain Entity entity} being tracked
+     * @param <MSG> The message type
+     */
+    public static <MSG> void sendToAllTrackingEntity(SimpleChannel channel, MSG message, Entity trackedEntity)
+    {
+        channel.send(message, PacketDistributor.TRACKING_ENTITY.with(trackedEntity));
+    }
+
+    /**
+     * Sends a packet to all clients tracking the specified {@linkplain Entity entity} and itself
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain MSG message} through
+     * @param message The {@linkplain MSG message} to send to the clients
+     * @param trackedEntity The {@linkplain Entity entity} being tracked
+     * @param <MSG> The message type
+     */
+    public static <MSG> void sendToAllTrackingEntityAndSelf(SimpleChannel channel, MSG message, Entity trackedEntity)
+    {
+        channel.send(message, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(trackedEntity));
+    }
+
+    /**
+     * Sends a {@linkplain CP capability sync packet} to all clients tracking the specified {@linkplain Entity entity}
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain CP capability sync packet} through
+     * @param capabilityPacket The {@linkplain CP capability packet} to send to the clients
+     * @param trackedEntity The {@linkplain Entity entity} being tracked
+     * @param <C> The {@linkplain AbstractCapabilityData} type being sent
+     * @param <CP> The {@linkplain CapabilitySyncS2CPacket} type being sent
+     */
+    public static <C extends AbstractCapabilityData<C>, CP extends CapabilitySyncS2CPacket<C>> void updateClientCapabilityForTracking(SimpleChannel channel, CP capabilityPacket, Entity trackedEntity)
+    {
+        sendToAllTrackingEntity(channel, capabilityPacket, trackedEntity);
+    }
+
+    /**
+     * Sends a {@linkplain CP capability sync packet} to all clients tracking the specified {@linkplain Entity entity} and itself
+     * @param channel The {@linkplain SimpleChannel channel} to send the {@linkplain CP capability sync packet} through
+     * @param capabilityPacket The {@linkplain CP capability packet} to send to the clients
+     * @param trackedEntity The {@linkplain Entity entity} being tracked
+     * @param <C> The {@linkplain AbstractCapabilityData} type being sent
+     * @param <CP> The {@linkplain CapabilitySyncS2CPacket} type being sent
+     */
+    public static <C extends AbstractCapabilityData<C>, CP extends CapabilitySyncS2CPacket<C>> void updateClientCapabilityForTrackingAndSelf(SimpleChannel channel, CP capabilityPacket, Entity trackedEntity)
+    {
+        sendToAllTrackingEntity(channel, capabilityPacket, trackedEntity);
     }
 }
