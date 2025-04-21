@@ -30,6 +30,16 @@ public abstract class CapabilitySyncS2CPacket<C extends AbstractCapabilityData<C
         this.nbtTag = capability.toNBT();
     }
 
+    /**
+     * Creates a new {@linkplain CapabilitySyncS2CPacket capability sync packet}
+     * @param buf The {@linkplain FriendlyByteBuf buffer} to read data from
+     */
+    public CapabilitySyncS2CPacket(FriendlyByteBuf buf)
+    {
+        this.entityId = buf.readInt();
+        this.nbtTag = buf.readNbt();
+    }
+
     @Override
     public void toBytes(FriendlyByteBuf buf)
     {
