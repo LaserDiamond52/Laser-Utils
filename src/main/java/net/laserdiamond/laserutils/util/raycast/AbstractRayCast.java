@@ -437,8 +437,6 @@ public abstract class AbstractRayCast<L extends Level, E extends Entity, ER, BSR
 
             if (!this.particles.isEmpty()) // Are there any particles to display?
             {
-//                this.particles.forEach(particleOptions -> displayParticles(particleOptions, rayCastVec));
-//                this.displayParticles(rayCast);
                 for (ParticleOptions particleOptions : this.particles)
                 {
                     this.displayParticles(this.level, particleOptions, rayCast);
