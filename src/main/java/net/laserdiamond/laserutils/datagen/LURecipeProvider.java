@@ -28,7 +28,6 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
     /**
      * Creates a new {@link LURecipeProvider}
      * @param packOutput The {@link PackOutput} of the {@link net.minecraft.data.DataGenerator}
-     * @param providerCompletableFuture The {@link HolderLookup.Provider} {@link CompletableFuture} of the {@link net.minecraftforge.data.event.GatherDataEvent}
      * @param dataGenerator The {@link LUDataGenerator}, specified by {@link T}
      */
     public LURecipeProvider(PackOutput packOutput, T dataGenerator) {
@@ -127,8 +126,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
 
             this.craftAdditionalToolItems(itemRegistryObject, craftableItem, recipeOutput);
 
-            switch (item) {
-                case SwordItem swordItem -> ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, swordItem)
+            if (item instanceof SwordItem swordItem)
+            {
+                ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, swordItem)
                         .pattern("X")
                         .pattern("X")
                         .pattern("S")
@@ -136,7 +136,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .define('S', stickItem)
                         .unlockedBy(getHasName(materialItem), has(materialItem))
                         .save(recipeOutput);
-                case PickaxeItem pickaxeItem -> ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, pickaxeItem)
+            } else if (item instanceof PickaxeItem pickaxeItem)
+            {
+                ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, pickaxeItem)
                         .pattern("XXX")
                         .pattern(" S")
                         .pattern(" S")
@@ -144,7 +146,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .define('S', stickItem)
                         .unlockedBy(getHasName(materialItem), has(materialItem))
                         .save(recipeOutput);
-                case AxeItem axeItem -> ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, axeItem)
+            } else if (item instanceof AxeItem axeItem)
+            {
+                ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, axeItem)
                         .pattern("XX")
                         .pattern("XS")
                         .pattern(" S")
@@ -152,7 +156,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .define('S', stickItem)
                         .unlockedBy(getHasName(materialItem), has(materialItem))
                         .save(recipeOutput);
-                case ShovelItem shovelItem -> ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, shovelItem)
+            } else if (item instanceof ShovelItem shovelItem)
+            {
+                ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, shovelItem)
                         .pattern("X")
                         .pattern("S")
                         .pattern("S")
@@ -160,7 +166,9 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .define('S', stickItem)
                         .unlockedBy(getHasName(materialItem), has(materialItem))
                         .save(recipeOutput);
-                case HoeItem hoeItem -> ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, hoeItem)
+            } else if (item instanceof HoeItem hoeItem)
+            {
+                ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, hoeItem)
                         .pattern("XX")
                         .pattern(" S")
                         .pattern(" S")
@@ -168,7 +176,6 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                         .define('S', stickItem)
                         .unlockedBy(getHasName(materialItem), has(materialItem))
                         .save(recipeOutput);
-                default -> {}
             }
         }
     }
