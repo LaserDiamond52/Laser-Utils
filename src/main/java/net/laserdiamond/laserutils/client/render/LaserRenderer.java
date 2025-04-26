@@ -8,10 +8,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.entity.GuardianRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 /**
  * Utility class that contains methods for rendering Laser beam-like objects.
@@ -36,9 +37,9 @@ public class LaserRenderer {
      * @param yaw The rotation of the beam on the y-axis
      * @param pitch The rotation of the beam on the x-axis
      * @param roll The rotation of the beam on the z-axis
-     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, int, float, float)
+     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, float[], float, float)
      */
-    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, RenderType beamRenderType, RenderType glowRenderType, float partialTick, float textureScale, long gameTime, float length, int color, float beamRadius, float glowRadius, float yaw, float pitch, float roll)
+    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, RenderType beamRenderType, RenderType glowRenderType, float partialTick, float textureScale, long gameTime, float length, float[] color, float beamRadius, float glowRadius, float yaw, float pitch, float roll)
     {
         poseStack.pushPose();
 
@@ -58,13 +59,13 @@ public class LaserRenderer {
         float f7 = -beamRadius;
         float f8 = -1.0F + f3;
         float f9 = length * textureScale * (0.5F / beamRadius) + f8;
-        BeaconRenderer.renderPart(poseStack, bufferSource.getBuffer(beamRenderType), color, 0, (int) length, 0.0F, beamRadius, beamRadius, 0.0F, f6, 0.0F, 0.0F, f7, 0.0F, 1.0F, f9, f8);
+        BeaconRenderer.renderPart(poseStack, bufferSource.getBuffer(beamRenderType), color[0], color[1], color[2], 1.0F, 0, (int) length, 0, beamRadius, beamRadius, 0.0F, f6, 0.0F, 0.0F, f7, 0.0F, 1.0F, f9, f8);
         poseStack.popPose();
 
         float f10 = -glowRadius;
         f6 = -glowRadius;
         f9 = length * textureScale + f8;
-        BeaconRenderer.renderPart(poseStack, bufferSource.getBuffer(glowRenderType), FastColor.ARGB32.color(32, color), 0, (int) length, f4, f10, glowRadius, f5, f6, glowRadius, glowRadius, glowRadius, 0.0F, 1.0F, f9, f8);
+        BeaconRenderer.renderPart(poseStack, bufferSource.getBuffer(glowRenderType), color[0], color[1], color[2], 0.125F, 0, (int) length, f4, f10, glowRadius, f5, f6, glowRadius, glowRadius, glowRadius, 0.0F, 1.0F, f9, f8);
         poseStack.popPose();
     }
 
@@ -84,9 +85,9 @@ public class LaserRenderer {
      * @param yaw The rotation of the beam on the y-axis
      * @param pitch The rotation of the beam on the x-axis
      * @param roll The rotation of the beam on the z-axis
-     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, int, float, float)
+     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, float[], float, float)
      */
-    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation beamTexture, ResourceLocation glowTexture, float partialTick, float textureScale, long gameTime, float length, int color, float beamRadius, float glowRadius, float yaw, float pitch, float roll)
+    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation beamTexture, ResourceLocation glowTexture, float partialTick, float textureScale, long gameTime, float length, float[] color, float beamRadius, float glowRadius, float yaw, float pitch, float roll)
     {
         renderBeaconBeam(poseStack, bufferSource, RenderType.beaconBeam(beamTexture, false), RenderType.beaconBeam(glowTexture, true), partialTick, textureScale, gameTime, length, color, beamRadius, glowRadius, yaw, pitch, roll);
     }
@@ -106,9 +107,9 @@ public class LaserRenderer {
      * @param glowRadius The radius of the outer beam
      * @param headYaw The head yaw of the {@linkplain net.minecraft.world.entity.Entity Entity}
      * @param headPitch The head pitch of hte {@linkplain net.minecraft.world.entity.Entity Entity}
-     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, int, float, float)
+     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, float[], float, float)
      */
-    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, RenderType beamRenderType, RenderType glowRenderType, float partialTick, float textureScale, long gameTime, float length, int color, float beamRadius, float glowRadius, float headYaw, float headPitch)
+    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, RenderType beamRenderType, RenderType glowRenderType, float partialTick, float textureScale, long gameTime, float length, float[] color, float beamRadius, float glowRadius, float headYaw, float headPitch)
     {
         renderBeaconBeam(poseStack, bufferSource, beamRenderType, glowRenderType, partialTick, textureScale, gameTime, length, color, beamRadius, glowRadius, headYaw, headPitch - 90.0F, 0F);
     }
@@ -128,9 +129,9 @@ public class LaserRenderer {
      * @param glowRadius The radius of the outer beam
      * @param headYaw The head yaw of the {@linkplain net.minecraft.world.entity.Entity Entity}
      * @param headPitch The head pitch of the {@linkplain net.minecraft.world.entity.Entity Entity}
-     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, int, float, float)
+     * @see BeaconRenderer#renderBeaconBeam(PoseStack, MultiBufferSource, ResourceLocation, float, float, long, int, int, float[], float, float)
      */
-    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation beamTexture, ResourceLocation glowTexture, float partialTick, float textureScale, long gameTime, float length, int color, float beamRadius, float glowRadius, float headYaw, float headPitch)
+    public static void renderBeaconBeam(PoseStack poseStack, MultiBufferSource bufferSource, ResourceLocation beamTexture, ResourceLocation glowTexture, float partialTick, float textureScale, long gameTime, float length, float[] color, float beamRadius, float glowRadius, float headYaw, float headPitch)
     {
         renderBeaconBeam(poseStack, bufferSource, beamTexture, glowTexture, partialTick, textureScale, gameTime, length, color, beamRadius, glowRadius, headYaw, headPitch - 90.0F, 0F);
     }
@@ -181,23 +182,25 @@ public class LaserRenderer {
         float f21 = -1.0F + f1;
         float f22 = distance * 2.5F + f21;
         PoseStack.Pose pose = poseStack.last();
-        GuardianRenderer.vertex(vertexConsumer, pose, f13, distance, f14, 255, 255, 255, 0.4999F, f22);
-        GuardianRenderer.vertex(vertexConsumer, pose, f13, 0.0F, f14, 255, 255, 255, 0.4999F, f21);
-        GuardianRenderer.vertex(vertexConsumer, pose, f15, 0.0F, f16, 255, 255, 255, 0.0F, f21);
-        GuardianRenderer.vertex(vertexConsumer, pose, f15, distance, f16, 255, 255, 255, 0.0F, f22);
-        GuardianRenderer.vertex(vertexConsumer, pose, f17, distance, f18, 255, 255, 255, 0.4999F, f22);
-        GuardianRenderer.vertex(vertexConsumer, pose, f17, 0.0F, f18, 255, 255, 255, 0.4999F, f21);
-        GuardianRenderer.vertex(vertexConsumer, pose, f19, 0.0F, f20, 255, 255, 255, 0.0F, f21);
-        GuardianRenderer.vertex(vertexConsumer, pose, f19, distance, f20, 255, 255, 255, 0.0F, f22);
+        Matrix4f matrix4f = pose.pose();
+        Matrix3f matrix3f = pose.normal();
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f13, distance, f14, 255, 255, 255, 0.4999F, f22);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f13, 0.0F, f14, 255, 255, 255, 0.4999F, f21);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f15, 0.0F, f16, 255, 255, 255, 0.0F, f21);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f15, distance, f16, 255, 255, 255, 0.0F, f22);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f17, distance, f18, 255, 255, 255, 0.4999F, f22);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f17, 0.0F, f18, 255, 255, 255, 0.4999F, f21);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f19, 0.0F, f20, 255, 255, 255, 0.0F, f21);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f19, distance, f20, 255, 255, 255, 0.0F, f22);
         float f23 = 0.0F;
         if (tickCount % 2 == 0) {
             f23 = 0.5F;
         }
 
-        GuardianRenderer.vertex(vertexConsumer, pose, f5, distance, f6, 255, 255, 255, 0.5F, f23 + 0.5F);
-        GuardianRenderer.vertex(vertexConsumer, pose, f7, distance, f8, 255, 255, 255, 1.0F, f23 + 0.5F);
-        GuardianRenderer.vertex(vertexConsumer, pose, f11, distance, f12, 255, 255, 255, 1.0F, f23);
-        GuardianRenderer.vertex(vertexConsumer, pose, f9, distance, f10, 255, 255, 255, 0.5F, f23);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f5, distance, f6, 255, 255, 255, 0.5F, f23 + 0.5F);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f7, distance, f8, 255, 255, 255, 1.0F, f23 + 0.5F);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f11, distance, f12, 255, 255, 255, 1.0F, f23);
+        GuardianRenderer.vertex(vertexConsumer, matrix4f, matrix3f, f9, distance, f10, 255, 255, 255, 0.5F, f23);
         poseStack.popPose();
     }
 

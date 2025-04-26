@@ -1,7 +1,9 @@
 package net.laserdiamond.laserutils.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 public abstract class NetworkPacket {
 
@@ -22,16 +24,17 @@ public abstract class NetworkPacket {
      * The packet logic. This is run on the packet's receiving end.
      * If the packet is traveling from client to server, this method run on the server.
      * Otherwise, if the packet is traveling from server to client, this method runs on the client
-     * @param context The {@link CustomPayloadEvent.Context}
+     * @param context The {@link NetworkEvent.Context}
      */
-    public abstract void packetWork(CustomPayloadEvent.Context context);
+    public abstract void packetWork(NetworkEvent.Context context);
 
     /**
      * Handles the packet's logic
-     * @param context The {@link CustomPayloadEvent.Context}
+     * @param contextSupplier The {@link NetworkEvent.Context}
      */
-    public final void handle(CustomPayloadEvent.Context context)
+    public final void handle(Supplier<NetworkEvent.Context> contextSupplier)
     {
+        NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> this.packetWork(context));
         context.setPacketHandled(true);
     }

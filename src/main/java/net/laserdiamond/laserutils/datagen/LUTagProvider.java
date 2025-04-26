@@ -4,13 +4,11 @@ import net.laserdiamond.laserutils.util.registry.TagKeyRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
-import net.minecraft.data.tags.EnchantmentTagsProvider;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.BlockTagsProvider;
@@ -147,45 +145,6 @@ public class LUTagProvider {
     }
 
     /**
-     * Enchantment Tag provider
-     * @param <T> The {@link LUDataGenerator} type
-     */
-    public static class EnchantmentTypeTags<T extends LUDataGenerator<T>> extends EnchantmentTagsProvider
-    {
-        protected final T dataGenerator;
-
-        /**
-         * Creates a new {@link EnchantmentTypeTags}
-         * @param pOutput The {@link PackOutput} of the {@link net.minecraft.data.DataGenerator}
-         * @param pLookupProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link net.minecraftforge.data.event.GatherDataEvent}
-         * @param dataGenerator The {@link LUDataGenerator}
-         */
-        public EnchantmentTypeTags(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, T dataGenerator) {
-            super(pOutput, pLookupProvider);
-            this.dataGenerator = dataGenerator;
-        }
-
-        @Override
-        protected void addTags(HolderLookup.Provider pProvider)
-        {
-            TagKeyRegistry.instance(this.modId).enchantmentTags.getMap().forEach((resourceKey, tagKeys) ->
-            {
-                for (TagKey<Enchantment> enchantmentTagKey : tagKeys)
-                {
-                    this.tag(enchantmentTagKey).add(resourceKey);
-                }
-            });
-            TagKeyRegistry.instance(this.modId).enchantmentTagKeyTags.getMap().forEach(((enchantmentTagKey, tagKeys) ->
-            {
-                for (TagKey<Enchantment> tagKey : tagKeys)
-                {
-                    this.tag(enchantmentTagKey).addTag(tagKey);
-                }
-            }));
-        }
-    }
-
-    /**
      * Biome Tag provider
      * @param <T> The {@link LUDataGenerator} type
      */
@@ -199,8 +158,8 @@ public class LUTagProvider {
          * @param pProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link net.minecraftforge.data.event.GatherDataEvent}
          * @param dataGenerator The {@link LUDataGenerator}
          */
-        public BiomeTags(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider, T dataGenerator) {
-            super(pOutput, pProvider);
+        public BiomeTags(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pProvider, String modId, ExistingFileHelper existingFileHelper, T dataGenerator) {
+            super(pOutput, pProvider, modId, existingFileHelper);
             this.dataGenerator = dataGenerator;
         }
 

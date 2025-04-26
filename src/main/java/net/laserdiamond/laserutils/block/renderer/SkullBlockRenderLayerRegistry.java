@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -60,10 +59,10 @@ public class SkullBlockRenderLayerRegistry {
      * @param modelLayerLocation The {@link ModelLayerLocation} of the {@link SkullBlock}
      * @param playerRendererMap The {@link PlayerRenderer} to add the {@link SkullBlock} to
      */
-    private static void addToPlayerRenderer(SkullBlock.Type type, ModelLayerLocation modelLayerLocation, Map<PlayerSkin.Model, EntityRenderer<? extends Player>> playerRendererMap)
+    private static void addToPlayerRenderer(SkullBlock.Type type, ModelLayerLocation modelLayerLocation, Map<String, EntityRenderer<? extends Player>> playerRendererMap)
     {
-        HashMap<PlayerSkin.Model, EntityRenderer<? extends Player>> skins = new HashMap<>(playerRendererMap);
-        for (Map.Entry<PlayerSkin.Model, EntityRenderer<? extends Player>> renderer : skins.entrySet()) // Loop through all entries
+        HashMap<String, EntityRenderer<? extends Player>> skins = new HashMap<>(playerRendererMap);
+        for (Map.Entry<String, EntityRenderer<? extends Player>> renderer : skins.entrySet()) // Loop through all entries
         {
             if (renderer.getValue() instanceof PlayerRenderer playerRenderer) // Ensure that the renderer we are getting is a PlayerRenderer
             {

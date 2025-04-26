@@ -1,5 +1,11 @@
 package net.laserdiamond.laserutils.item.equipment.tools;
 
+import com.google.common.collect.Multimap;
+import net.laserdiamond.laserutils.attributes.EquipmentAttributes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Tier;
 
@@ -17,8 +23,16 @@ public class EnhancedHoeItem extends HoeItem {
      * @param attackSpeed The attack speed
      * @param properties The {@link Properties} to give the {@link EnhancedHoeItem}
      */
-    public EnhancedHoeItem(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed, Properties properties) {
-        super(enhancedToolTier.toolTier(), properties.attributes(EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed).build()));
+    public EnhancedHoeItem(EnhancedToolTier enhancedToolTier, int attackDamage, float attackSpeed, Properties properties) {
+        super(enhancedToolTier.toolTier(), attackDamage, attackSpeed, properties);
         this.enhancedToolTier = enhancedToolTier;
+        this.defaultModifiers = EnhancedToolTier.createEnhancedToolAttributes(enhancedToolTier, attackDamage, attackSpeed);
+    }
+
+    @Override
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot pEquipmentSlot)
+    {
+        // Override here to allow for off-hand attributes
+        return pEquipmentSlot == EquipmentSlot.OFFHAND ? EquipmentAttributes.createAttributesForSlot(pEquipmentSlot, this.enhancedToolTier.attributeFactory().create(ResourceLocation.withDefaultNamespace("offhand.attribute"))) : super.getDefaultAttributeModifiers(pEquipmentSlot);
     }
 }

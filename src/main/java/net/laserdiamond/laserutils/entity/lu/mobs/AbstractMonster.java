@@ -100,7 +100,7 @@ public abstract class AbstractMonster<M extends Monster> extends Monster {
                         itemstack.setDamageValue(itemstack.getDamageValue() + this.random.nextInt(2)); // Damage the item
                         if (itemstack.getDamageValue() >= itemstack.getMaxDamage()) // Has the item broken yet?
                         {
-                            this.onEquippedItemBroken(itemstack.getItem(), EquipmentSlot.HEAD);
+                            this.broadcastBreakEvent(EquipmentSlot.HEAD);
                             this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY); // Nothing should be in the mob's head slot now
                         }
                     }
@@ -110,7 +110,7 @@ public abstract class AbstractMonster<M extends Monster> extends Monster {
 
                 if (flag) // Should we set the mob on fire?
                 {
-                    this.igniteForSeconds(8.0F); // Set on fire
+                    this.setSecondsOnFire(8); // Set on fire
                 }
             }
         }

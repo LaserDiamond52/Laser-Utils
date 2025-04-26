@@ -4,11 +4,11 @@ import net.laserdiamond.laserutils.LaserUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.laserdiamond.laserutils.client.LUKeyBindings;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -26,10 +26,10 @@ public interface DurationAbilityItem extends AbilityItem {
 
     /**
      * Sets the player's ability to be active
-     * @param context The {@link CustomPayloadEvent.Context} received by the server
+     * @param context The {@link NetworkEvent.Context} received by the server
      */
     @Override
-    default void onServer(CustomPayloadEvent.Context context)
+    default void onServer(NetworkEvent.Context context)
     {
         final ServerPlayer serverPlayer = context.getSender();
 

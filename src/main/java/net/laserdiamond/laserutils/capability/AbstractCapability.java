@@ -99,15 +99,15 @@ public abstract class AbstractCapability<CPR extends ICapabilityProvider, CD ext
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.Provider provider)
-    {
+    public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         this.createCapabilityData().saveNBTData(nbt);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
+    public void deserializeNBT(CompoundTag compoundTag)
+    {
         this.createCapabilityData().loadNBTData(compoundTag);
     }
 }

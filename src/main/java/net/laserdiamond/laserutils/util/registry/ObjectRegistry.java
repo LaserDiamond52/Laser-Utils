@@ -97,7 +97,7 @@ public class ObjectRegistry {
      */
     public static <T> TagKey<T> createTag(ResourceKey<Registry<T>> registry, String modId, String path)
     {
-        return TagKey.create(registry, modId, path);
+        return TagKey.create(registry, ResourceLocation.fromNamespaceAndPath(modId, path));
     }
 
     /**
@@ -423,21 +423,6 @@ public class ObjectRegistry {
     }
 
     /**
-     * Registers a new {@link Enchantment}
-     * @param modId The Mod ID
-     * @param name The name of the enchantment in-game
-     * @param localName The local name of the enchantment
-     * @param tags A {@link List} of {@link TagKey}s to apply to the enchantment
-     * @return A new {@link ResourceKey} of the {@link Enchantment}
-     */
-    public static ResourceKey<Enchantment> registerEnchantment(String modId, String name, String localName, List<TagKey<Enchantment>> tags)
-    {
-        ResourceKey<Enchantment> ret = registerEnchantment(modId, name, localName);
-        tagKeyRegistry(modId).enchantmentTags.addEntry(ret, tags);
-        return ret;
-    }
-
-    /**
      * Registers a new {@link Biome}
      * @param modId The Mod ID
      * @param name The name of the biome in-game
@@ -462,41 +447,6 @@ public class ObjectRegistry {
         ResourceKey<Biome> ret = registerBiome(modId, name, localName);
         tagKeyRegistry(modId).biomeTags.addEntry(ret, tags);
         return ret;
-    }
-
-    /**
-     * Registers a new {@link ArmorMaterial}. Example:
-     * <pre>{@code
-     *
-     * public static final Holder<ArmorMaterial> EXAMPLE_MATERIAL = ObjectRegistry.registerArmorMaterial(MODID, "example_material", new int[]{5,5,5,5,5}, 10, SoundEvents.ARMOR_EQUIP_CHAIN, 1.0F, 0.1F, () -> Ingredient.of(Items.DIAMOND));
-     *
-     * }</pre>
-     * @param modId The Mod ID of the mod the {@link ArmorMaterial} will be apart of
-     * @param name The name of the {@link ArmorMaterial}
-     * @param protectionValues An array of integers depicting the protection values of each piece (Helmet, Chestplate, Leggings, Boots, Body)
-     * @param enchantability The effectiveness of gaining enchantments from an enchanting table
-     * @param equipSound The {@link Holder} of the {@link SoundEvent} to make when an armor piece is equipped/unequipped
-     * @param toughness The toughness value of each armor piece
-     * @param knockbackResistance The knockback resistance value of each armor piece
-     * @param repairIngredient The {@link Item}s that can be used to repair the {@link ArmorMaterial}
-     * @return A {@link Holder} containing the {@link ArmorMaterial}
-     */
-    public static Holder<ArmorMaterial> registerArmorMaterial(String modId, String name, int[] protectionValues, int enchantability, Holder<SoundEvent> equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredient)
-    {
-        if (protectionValues.length != 5)
-        {
-            throw new IllegalArgumentException("There must be 5 protection values, and only " + protectionValues.length + " are present");
-        }
-        ResourceLocation resLoc = ResourceLocation.fromNamespaceAndPath(modId, name);
-        List<ArmorMaterial.Layer> layers = List.of(new ArmorMaterial.Layer(resLoc));
-        return Registry.registerForHolder(BuiltInRegistries.ARMOR_MATERIAL, resLoc, new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (attribute) ->
-        {
-            attribute.put(ArmorItem.Type.HELMET, protectionValues[0]);
-            attribute.put(ArmorItem.Type.CHESTPLATE, protectionValues[1]);
-            attribute.put(ArmorItem.Type.LEGGINGS, protectionValues[2]);
-            attribute.put(ArmorItem.Type.BOOTS, protectionValues[3]);
-            attribute.put(ArmorItem.Type.BODY, protectionValues[4]);
-        }), enchantability, equipSound, repairIngredient, layers, toughness, knockbackResistance));
     }
 
 }

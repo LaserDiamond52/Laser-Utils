@@ -126,12 +126,6 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
             dataGenerator.addProvider(event.includeServer(), entityTypeTags); // Entity Tags
         }
 
-        LUTagProvider.EnchantmentTypeTags<T> enchantmentTypeTags = this.enchantmentTypeTags(packOutput, lookUpProvider);
-        if (enchantmentTypeTags != null) // Do not create if null
-        {
-            dataGenerator.addProvider(event.includeServer(), enchantmentTypeTags); // Enchantment Tags
-        }
-
         LUTagProvider.BiomeTags<T> biomeTags = this.biomeTags(packOutput, lookUpProvider);
         if (biomeTags != null) // Do not create if null
         {
@@ -256,17 +250,6 @@ public abstract class LUDataGenerator<T extends LUDataGenerator<T>> {
      * @return The {@link LUTagProvider.EntityTypeTags} to use to apply {@link net.minecraft.tags.TagKey}s to entity types
      */
     protected LUTagProvider.EntityTypeTags<T> entityTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider, ExistingFileHelper existingFileHelper)
-    {
-        return null;
-    }
-
-    /**
-     * Specifies the {@link LUTagProvider.EnchantmentTypeTags} to use to apply the {@link net.minecraft.tags.TagKey}s to enchantments
-     * @param packOutput The {@link PackOutput} of the {@link DataGenerator}
-     * @param lookUpProvider The {@link CompletableFuture} {@link HolderLookup.Provider} of the {@link GatherDataEvent}
-     * @return The {@link LUTagProvider.EnchantmentTypeTags} to use to apply {@link net.minecraft.tags.TagKey}s to enchantments
-     */
-    protected LUTagProvider.EnchantmentTypeTags<T> enchantmentTypeTags(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookUpProvider)
     {
         return null;
     }

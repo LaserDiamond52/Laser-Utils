@@ -33,11 +33,6 @@ public final class TagKeyRegistry {
     public final RegistryObjectTags<EntityType<?>> entityTypeTags;
 
     /**
-     * Enchantment tag registry
-     */
-    public final ResourceKeyTags<Enchantment> enchantmentTags;
-
-    /**
      * Biome tag registry
      */
     public final ResourceKeyTags<Biome> biomeTags;
@@ -58,11 +53,6 @@ public final class TagKeyRegistry {
     public final TagKeyTags<EntityType<?>> entityTypeTagKeyTags;
 
     /**
-     * Enchantment Tag Key tag registry
-     */
-    public final TagKeyTags<Enchantment> enchantmentTagKeyTags;
-
-    /**
      * Biome Tag Key tag registry
      */
     public final TagKeyTags<Biome> biomeTagKeyTags;
@@ -80,12 +70,10 @@ public final class TagKeyRegistry {
         this.itemTags = new RegistryObjectTags<>();
         this.blockTags = new RegistryObjectTags<>();
         this.entityTypeTags = new RegistryObjectTags<>();
-        this.enchantmentTags = new ResourceKeyTags<>();
         this.biomeTags = new ResourceKeyTags<>();
         this.itemTagKeyTags = new TagKeyTags<>();
         this.blockTagKeyTags = new TagKeyTags<>();
         this.entityTypeTagKeyTags = new TagKeyTags<>();
-        this.enchantmentTagKeyTags = new TagKeyTags<>();
         this.biomeTagKeyTags = new TagKeyTags<>();
     }
 

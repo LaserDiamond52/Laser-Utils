@@ -1,17 +1,15 @@
 package net.laserdiamond.laserutils.network;
 
 import net.laserdiamond.laserutils.LaserUtils;
-import net.laserdiamond.laserutils.capability.AbstractCapability;
 import net.laserdiamond.laserutils.capability.AbstractCapabilityData;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.SimpleChannel;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Function;
 
@@ -43,10 +41,10 @@ public class NetworkPackets {
      */
     public static void registerPackets()
     {
-        INSTANCE = ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(LaserUtils.MODID, "main"))
-                .serverAcceptedVersions((status, i) -> true)
-                .clientAcceptedVersions((status, i) -> true)
-                .networkProtocolVersion(1)
+        INSTANCE = NetworkRegistry.ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(LaserUtils.MODID, "main"))
+                .serverAcceptedVersions((s) -> true)
+                .clientAcceptedVersions((s) -> true)
+                .networkProtocolVersion(() -> "1.0")
                 .simpleChannel();
 
         registerPacket(INSTANCE, id(), ItemAbilityPacket.class, ItemAbilityPacket::new, NetworkDirection.PLAY_TO_SERVER);
@@ -61,7 +59,7 @@ public class NetworkPackets {
      * @param networkDirection The {@link NetworkDirection} the packet will travel in
      * @param <P> The {@link NetworkPacket} type to register
      */
-    public static <P extends NetworkPacket> void registerPacket(SimpleChannel channel, int id, Class<P> packetClazz, Function<RegistryFriendlyByteBuf, P> decoder, NetworkDirection<RegistryFriendlyByteBuf> networkDirection)
+    public static <P extends NetworkPacket> void registerPacket(SimpleChannel channel, int id, Class<P> packetClazz, Function<FriendlyByteBuf, P> decoder, NetworkDirection networkDirection)
     {
         channel.messageBuilder(packetClazz, id, networkDirection)
                 .decoder(decoder)
@@ -78,7 +76,7 @@ public class NetworkPackets {
      */
     public static <MSG> void sendToServer(SimpleChannel channel, MSG message)
     {
-        channel.send(message, PacketDistributor.SERVER.noArg());
+        channel.send(PacketDistributor.SERVER.noArg(), message);
     }
 
     /**
@@ -90,7 +88,7 @@ public class NetworkPackets {
      */
     public static <MSG> void sendToPlayer(SimpleChannel channel, MSG message, ServerPlayer player)
     {
-        channel.send(message, PacketDistributor.PLAYER.with(player));
+        channel.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
     /**
@@ -101,7 +99,7 @@ public class NetworkPackets {
      */
     public static <MSG> void sendToAllClients(SimpleChannel channel, MSG message)
     {
-        channel.send(message, PacketDistributor.ALL.noArg());
+        channel.send(PacketDistributor.ALL.noArg(), message);
     }
 
     /**
@@ -113,7 +111,7 @@ public class NetworkPackets {
      */
     public static <MSG> void sendToAllTrackingEntity(SimpleChannel channel, MSG message, Entity trackedEntity)
     {
-        channel.send(message, PacketDistributor.TRACKING_ENTITY.with(trackedEntity));
+        channel.send(PacketDistributor.TRACKING_ENTITY.with(() -> trackedEntity), message);
     }
 
     /**
@@ -125,7 +123,7 @@ public class NetworkPackets {
      */
     public static <MSG> void sendToAllTrackingEntityAndSelf(SimpleChannel channel, MSG message, Entity trackedEntity)
     {
-        channel.send(message, PacketDistributor.TRACKING_ENTITY_AND_SELF.with(trackedEntity));
+        channel.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> trackedEntity), message);
     }
 
     /**

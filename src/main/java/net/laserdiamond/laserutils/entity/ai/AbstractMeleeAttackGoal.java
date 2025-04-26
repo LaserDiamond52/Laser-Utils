@@ -80,7 +80,7 @@ public abstract class AbstractMeleeAttackGoal<PM extends PathfinderMob & Attacki
      * @param pEnemy The target of the {@link PM}
      */
     @Override
-    protected void checkAndPerformAttack(LivingEntity pEnemy)
+    protected void checkAndPerformAttack(LivingEntity pEnemy, double distToEnemySqr)
     {
         if (this.canPerformAttack(pEnemy))
         {
@@ -105,7 +105,6 @@ public abstract class AbstractMeleeAttackGoal<PM extends PathfinderMob & Attacki
         }
     }
 
-    @Override
     protected boolean canPerformAttack(LivingEntity livingEntity) {
         return this.mob.isWithinMeleeAttackRange(livingEntity) && this.mob.getSensing().hasLineOfSight(livingEntity);
     }

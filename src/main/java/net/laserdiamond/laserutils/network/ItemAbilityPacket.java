@@ -5,8 +5,7 @@ import net.laserdiamond.laserutils.item.equipment.tools.DurationAbilityItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.laserdiamond.laserutils.client.LUKeyBindings;
+import net.minecraftforge.network.NetworkEvent;
 
 /**
  * {@link NetworkPacket} sent from the client to the server indicating that a player pressed the {@link net.laserdiamond.laserutils.client.LUKeyBindings#abilityKey} whilst holding an {@link AbilityItem}
@@ -25,11 +24,11 @@ public final class ItemAbilityPacket extends NetworkPacket {
     public ItemAbilityPacket(FriendlyByteBuf buf) {}
 
     /**
-     * Calls {@link AbilityItem#onServer(CustomPayloadEvent.Context)} on the server and puts the item on cooldown if the {@link AbilityItem} is not on cooldown
-     * @param context The {@link CustomPayloadEvent.Context}
+     * Calls {@link AbilityItem#onServer(NetworkEvent.Context)} on the server and puts the item on cooldown if the {@link AbilityItem} is not on cooldown
+     * @param context The {@link NetworkEvent.Context}
      */
     @Override
-    public void packetWork(CustomPayloadEvent.Context context)
+    public void packetWork(NetworkEvent.Context context)
     {
         final ServerPlayer player = context.getSender();
 

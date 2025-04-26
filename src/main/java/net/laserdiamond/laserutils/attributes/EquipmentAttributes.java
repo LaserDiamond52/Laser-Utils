@@ -1,16 +1,15 @@
 package net.laserdiamond.laserutils.attributes;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.laserdiamond.laserutils.item.equipment.armor.EnhancedArmorMaterial;
 import net.laserdiamond.laserutils.item.equipment.tools.EnhancedToolTier;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -27,7 +26,22 @@ import java.util.List;
  */
 public class EquipmentAttributes {
 
-    private final Multimap<Holder<Attribute>, AttributeModifier> attributes;
+    public static Multimap<Attribute, AttributeModifier> createAttributesForSlot(EquipmentSlot slot, EquipmentAttributes equipmentAttributes)
+    {
+        Multimap<Attribute, AttributeModifier> modifiers = LinkedHashMultimap.create();
+
+        List<SlotAttribute> slotAttributeList = equipmentAttributes.getSlotAttributes();
+        slotAttributeList.forEach(slotAttribute ->
+        {
+            if (slotAttribute.slotModifiers().get(slot) != null && slotAttribute.slotModifiers().containsKey(slot))
+            {
+                modifiers.put(slotAttribute.attribute(), slotAttribute.slotModifiers().get(slot));
+            }
+        });
+        return modifiers;
+    }
+
+    private final Multimap<Attribute, AttributeModifier> attributes;
 
     private final ResourceLocation resourceLocation;
 
@@ -63,7 +77,7 @@ public class EquipmentAttributes {
      * @param attributeModifier The {@link AttributeModifier} to map to the {@link Attribute}
      * @return {@link EquipmentAttributes} instance
      */
-    public EquipmentAttributes addSpecificAttribute(Holder<Attribute> attribute, AttributeModifier attributeModifier)
+    public EquipmentAttributes addSpecificAttribute(Attribute attribute, AttributeModifier attributeModifier)
     {
         this.attributes.put(attribute, attributeModifier);
         return this;
@@ -76,9 +90,9 @@ public class EquipmentAttributes {
      * @param value The value of the attribute
      * @return {@link EquipmentAttributes} instance
      */
-    public EquipmentAttributes addAttribute(Holder<Attribute> attribute, AttributeModifier.Operation operation, double value)
+    public EquipmentAttributes addAttribute(Attribute attribute, AttributeModifier.Operation operation, double value)
     {
-        this.addSpecificAttribute(attribute, new AttributeModifier(this.resourceLocation, value, operation));
+        this.addSpecificAttribute(attribute, new AttributeModifier(this.resourceLocation.toString(), value, operation));
         return this;
     }
 
@@ -123,7 +137,7 @@ public class EquipmentAttributes {
     /**
      * @return A copy of the {@link EquipmentAttributes#attributes} {@link HashMap}
      */
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributes()
+    public Multimap<Attribute, AttributeModifier> getAttributes()
     {
         return ArrayListMultimap.create(this.attributes);
     }
@@ -132,7 +146,6 @@ public class EquipmentAttributes {
      * Represents an {@link Attribute} that has a specific value depending on the {@link EquipmentSlot} the {@link AttributeModifier} is mapped to, allowing for {@link Attribute}s in different {@link EquipmentSlot}s.
      * This is intended to be used with the {@link EquipmentAttributes}.
      * Before adding {@link AttributeModifier}s for other slots that aren't normally used, make sure the {@link Item} the {@link SlotAttribute}s are being applied to can support {@link Attribute}s in said {@link EquipmentSlot}.
-     * The {@link ItemAttributeModifiers.Builder} can also be used to directly add {@link Attribute}s to an {@link Item}'s {@link Item.Properties}
      * Example:
      * <pre>{@code
      *
@@ -145,9 +158,8 @@ public class EquipmentAttributes {
      * @param attribute The {@link Attribute} to give a value to
      * @param slotModifiers An {@link EnumMap} that maps the {@link EquipmentSlot} to the {@link AttributeModifier} for the {@link Attribute}
      * @see net.minecraft.world.item.ArmorMaterials
-     * @see ItemAttributeModifiers.Builder
      */
-    public record SlotAttribute(Holder<Attribute> attribute, EnumMap<EquipmentSlot, AttributeModifier> slotModifiers) {}
+    public record SlotAttribute(Attribute attribute, EnumMap<EquipmentSlot, AttributeModifier> slotModifiers) {}
 
     /**
      * Factory for creating {@link EquipmentAttributes}s

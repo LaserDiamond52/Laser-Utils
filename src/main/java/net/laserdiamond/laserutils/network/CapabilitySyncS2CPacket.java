@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 /**
  * {@linkplain NetworkPacket Network Packet} used to help sync capabilities between the server and the client
@@ -48,7 +48,7 @@ public abstract class CapabilitySyncS2CPacket<C extends AbstractCapabilityData<C
     }
 
     @Override
-    public void packetWork(CustomPayloadEvent.Context context)
+    public void packetWork(NetworkEvent.Context context)
     {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)

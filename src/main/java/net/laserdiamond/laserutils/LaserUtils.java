@@ -2,6 +2,7 @@ package net.laserdiamond.laserutils;
 
 import com.mojang.logging.LogUtils;
 import net.laserdiamond.laserutils.datagen.LULanguageProvider;
+import net.laserdiamond.laserutils.item.ItemTest;
 import net.laserdiamond.laserutils.network.NetworkPackets;
 import net.laserdiamond.laserutils.util.registry.LanguageRegistry;
 import net.minecraft.data.DataGenerator;
@@ -37,9 +38,14 @@ public class LaserUtils {
         eventBus.addListener(this::commonSetUp);
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        register(eventBus);
     }
 
-
+    private void register(IEventBus eventBus)
+    {
+        ItemTest.registerItems(eventBus);
+    }
 
     private void commonSetUp(final FMLCommonSetupEvent event)
     {

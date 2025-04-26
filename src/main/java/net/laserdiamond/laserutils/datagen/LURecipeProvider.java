@@ -15,6 +15,7 @@ import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * Recipe provider
@@ -30,13 +31,13 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
      * @param providerCompletableFuture The {@link HolderLookup.Provider} {@link CompletableFuture} of the {@link net.minecraftforge.data.event.GatherDataEvent}
      * @param dataGenerator The {@link LUDataGenerator}, specified by {@link T}
      */
-    public LURecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> providerCompletableFuture, T dataGenerator) {
-        super(packOutput, providerCompletableFuture);
+    public LURecipeProvider(PackOutput packOutput, T dataGenerator) {
+        super(packOutput);
         this.dataGenerator = dataGenerator;
     }
 
     @Override
-    protected final void buildRecipes(RecipeOutput recipeOutput)
+    protected final void buildRecipes(Consumer<FinishedRecipe> recipeOutput)
     {
         this.dataGenerator.itemDeferredRegister().getEntries().forEach((itemRegistryObject) ->
         {
@@ -51,10 +52,10 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
     /**
      * Creates the recipes for all {@link ArmorItem}s
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create the recipe for
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      * @see GenericArmorCraftableItem
      */
-    protected final void craftArmorItems(RegistryObject<Item> itemRegistryObject, RecipeOutput recipeOutput)
+    protected final void craftArmorItems(RegistryObject<Item> itemRegistryObject, Consumer<FinishedRecipe> recipeOutput)
     {
         Item item = itemRegistryObject.get();
 
@@ -95,13 +96,6 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
                             .define('X', materialItem)
                             .unlockedBy(getHasName(materialItem), has(materialItem))
                             .save(recipeOutput);
-                    case BODY -> ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, armorItem)
-                            .pattern("X  ")
-                            .pattern("XXX")
-                            .pattern("X X")
-                            .define('X', materialItem)
-                            .unlockedBy(getHasName(materialItem), has(materialItem))
-                            .save(recipeOutput);
                 }
             }
         }
@@ -111,18 +105,18 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
      * Creates any other additional armor recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create the recipe for
      * @param armorCraftableItem The {@link GenericArmorCraftableItem} instance type of the {@link Item}
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      * @see GenericArmorCraftableItem
      */
-    protected void craftAdditionalArmorItems(RegistryObject<Item> itemRegistryObject, GenericArmorCraftableItem armorCraftableItem, RecipeOutput recipeOutput) {}
+    protected void craftAdditionalArmorItems(RegistryObject<Item> itemRegistryObject, GenericArmorCraftableItem armorCraftableItem, Consumer<FinishedRecipe> recipeOutput) {}
 
     /**
      * Creates all the recipes for all tool items
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create the recipe for
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      * @see GenericToolCraftableItem
      */
-    protected final void craftToolItems(RegistryObject<Item> itemRegistryObject, RecipeOutput recipeOutput)
+    protected final void craftToolItems(RegistryObject<Item> itemRegistryObject, Consumer<FinishedRecipe> recipeOutput)
     {
         Item item = itemRegistryObject.get();
 
@@ -183,17 +177,17 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
      * Creates any other additional tool recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create a recipe for
      * @param toolCraftableItem The {@link GenericToolCraftableItem} instance type of the {@link Item}
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      * @see GenericToolCraftableItem
      */
-    protected void craftAdditionalToolItems(RegistryObject<Item> itemRegistryObject, GenericToolCraftableItem toolCraftableItem, RecipeOutput recipeOutput) {}
+    protected void craftAdditionalToolItems(RegistryObject<Item> itemRegistryObject, GenericToolCraftableItem toolCraftableItem, Consumer<FinishedRecipe> recipeOutput) {}
 
     /**
      * Creates all smithing table-related recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create the recipe for
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      */
-    protected final void craftSmithingItems(RegistryObject<Item> itemRegistryObject, RecipeOutput recipeOutput)
+    protected final void craftSmithingItems(RegistryObject<Item> itemRegistryObject, Consumer<FinishedRecipe> recipeOutput)
     {
         Item item = itemRegistryObject.get();
 
@@ -216,16 +210,16 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
      * Creates any other additional smithing table recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create a recipe for
      * @param smithingTransformItem The {@link SmithingTransformItem} instance type of the {@link Item}
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      */
-    protected void craftAdditionalSmithingItems(RegistryObject<Item> itemRegistryObject, SmithingTransformItem smithingTransformItem, RecipeOutput recipeOutput) {}
+    protected void craftAdditionalSmithingItems(RegistryObject<Item> itemRegistryObject, SmithingTransformItem smithingTransformItem, Consumer<FinishedRecipe> recipeOutput) {}
 
     /**
      * Creates all the smithing template recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create the recipe for
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      */
-    protected void createSmithingTemplateRecipes(RegistryObject<Item> itemRegistryObject, RecipeOutput recipeOutput)
+    protected void createSmithingTemplateRecipes(RegistryObject<Item> itemRegistryObject, Consumer<FinishedRecipe> recipeOutput)
     {
         Item item = itemRegistryObject.get();
 
@@ -249,16 +243,16 @@ public class LURecipeProvider<T extends LUDataGenerator<T>> extends RecipeProvid
      * Creates any additional smithing template recipes
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create a recipe for
      * @param smithingTemplateCraftableItem The {@link SmithingTemplateCraftableItem} instance type of the item
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      */
-    protected void createAdditionalSmithingTemplateRecipes(RegistryObject<Item> itemRegistryObject, SmithingTemplateCraftableItem smithingTemplateCraftableItem, RecipeOutput recipeOutput) {}
+    protected void createAdditionalSmithingTemplateRecipes(RegistryObject<Item> itemRegistryObject, SmithingTemplateCraftableItem smithingTemplateCraftableItem, Consumer<FinishedRecipe> recipeOutput) {}
 
     /**
      * Creates any other additional recipes for items
      * @param itemRegistryObject The {@link Item} {@link RegistryObject} to create a recipe for
-     * @param recipeOutput The {@link RecipeOutput} of the {@link RecipeProvider}
+     * @param recipeOutput The {@linkplain FinishedRecipe Finished Recipe Consumer} of the {@link RecipeProvider}
      */
-    protected void craftAdditionalItems(RegistryObject<Item> itemRegistryObject, RecipeOutput recipeOutput) {}
+    protected void craftAdditionalItems(RegistryObject<Item> itemRegistryObject, Consumer<FinishedRecipe> recipeOutput) {}
 
 
 }

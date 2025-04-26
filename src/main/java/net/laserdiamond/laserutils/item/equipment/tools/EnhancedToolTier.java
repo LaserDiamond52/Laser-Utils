@@ -1,16 +1,14 @@
 package net.laserdiamond.laserutils.item.equipment.tools;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.laserdiamond.laserutils.attributes.EquipmentAttributes;
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import java.util.List;
 
@@ -27,42 +25,40 @@ import java.util.List;
 public record EnhancedToolTier(Tier toolTier, EquipmentAttributes.Factory attributeFactory) {
 
     /**
-     * Creates a {@link ItemAttributeModifiers.Builder} using the {@link EnhancedToolTier}
+     * Creates the tool's attributes using the {@link EnhancedToolTier}
      *
      * @param enhancedToolTier The {@link EnhancedToolTier} to use
      * @param attackDamage     The bonus attack damage of the item
      * @param attackSpeed      The attack speed of the item
-     * @return The {@link ItemAttributeModifiers.Builder} containing the new {@link Attribute}s for any {@link net.minecraft.world.item.TieredItem}
+     * @return A {@linkplain Multimap multi map} containing the new {@link Attribute}s for any {@link net.minecraft.world.item.TieredItem}
      */
-    public static ItemAttributeModifiers.Builder createEnhancedToolAttributes(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed)
+    public static Multimap<Attribute, AttributeModifier> createEnhancedToolAttributes(EnhancedToolTier enhancedToolTier, double attackDamage, double attackSpeed)
     {
         final Tier toolTier = enhancedToolTier.toolTier();
         final EquipmentAttributes equipmentAttributes = enhancedToolTier.attributeFactory().create(ResourceLocation.withDefaultNamespace("mainhand.attribute"));
-        ItemAttributeModifiers.Builder itemAttributeBuilder = ItemAttributeModifiers.builder();
+        Multimap<Attribute, AttributeModifier> ret = LinkedHashMultimap.create();
 
         if (!equipmentAttributes.getCanOverride())
         {
-            itemAttributeBuilder.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(EnhancedSwordItem.BASE_ATTACK_DAMAGE_ID, attackDamage + toolTier.getAttackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                    .add(Attributes.ATTACK_SPEED, new AttributeModifier(EnhancedSwordItem.BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+            ret.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(EnhancedSwordItem.BASE_ATTACK_DAMAGE_UUID, ResourceLocation.withDefaultNamespace("mainhand.attribute").toString(),attackDamage + toolTier.getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
+            ret.put(Attributes.ATTACK_SPEED, new AttributeModifier(EnhancedSwordItem.BASE_ATTACK_SPEED_UUID, ResourceLocation.withDefaultNamespace("mainhand.attribute").toString(), attackSpeed, AttributeModifier.Operation.ADDITION));
         }
 
-        Multimap<Holder<Attribute>, AttributeModifier> attributes = equipmentAttributes.getAttributes();
-        attributes.forEach((attributeHolder, attributeModifier) -> itemAttributeBuilder.add(attributeHolder, attributeModifier, EquipmentSlotGroup.MAINHAND));
+        Multimap<Attribute, AttributeModifier> attributes = equipmentAttributes.getAttributes();
+        attributes.forEach(ret::put);
 
         List<EquipmentAttributes.SlotAttribute> slotAttributeList = equipmentAttributes.getSlotAttributes();
         slotAttributeList.forEach(slotAttribute ->
         {
-            // Only add attributes that can be applied to the main-hand/off-hand
+            // Only add attributes that can be applied to the main-hand
             if (slotAttribute.slotModifiers().get(EquipmentSlot.MAINHAND) != null && slotAttribute.slotModifiers().containsKey(EquipmentSlot.MAINHAND))
             {
-                itemAttributeBuilder.add(slotAttribute.attribute(), slotAttribute.slotModifiers().get(EquipmentSlot.MAINHAND), EquipmentSlotGroup.MAINHAND);
-            }
-            if (slotAttribute.slotModifiers().get(EquipmentSlot.OFFHAND) != null && slotAttribute.slotModifiers().containsKey(EquipmentSlot.OFFHAND))
-            {
-                itemAttributeBuilder.add(slotAttribute.attribute(), slotAttribute.slotModifiers().get(EquipmentSlot.OFFHAND), EquipmentSlotGroup.OFFHAND);
+                ret.put(slotAttribute.attribute(), slotAttribute.slotModifiers().get(EquipmentSlot.MAINHAND));
             }
         });
 
-        return itemAttributeBuilder;
+        return ret;
     }
+
+
 }

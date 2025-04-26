@@ -1,8 +1,7 @@
 package net.laserdiamond.laserutils.item.equipment.tools;
 
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.laserdiamond.laserutils.client.LUKeyBindings;
+import net.minecraftforge.network.NetworkEvent;
 
 /**
  * Represents an item that performs an ability when the {@link net.laserdiamond.laserutils.client.LUKeyBindings#abilityKey} is pressed
@@ -11,9 +10,9 @@ public interface AbilityItem {
 
     /**
      * Called on the server when the ability key is pressed, and the item is no longer on cooldown.
-     * @param context The {@link CustomPayloadEvent.Context} received by the server
+     * @param context The {@link NetworkEvent.Context} received by the server
      */
-    void onServer(CustomPayloadEvent.Context context);
+    void onServer(NetworkEvent.Context context);
 
     /**
      * Called on the client when the ability key is pressed, and the item is no longer on cooldown.
