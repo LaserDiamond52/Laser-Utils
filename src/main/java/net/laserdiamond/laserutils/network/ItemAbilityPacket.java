@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 /**
- * {@link NetworkPacket} sent from the client to the server indicating that a player pressed the {@link net.laserdiamond.laserutils.client.LUKeyBindings#abilityKey} whilst holding an {@link AbilityItem}
+ * {@link NetworkPacket} sent from the client to the server indicating that a player pressed the {@link net.laserdiamond.laserutils.client.LUKeyBindings#ABILITY_KEY} whilst holding an {@link AbilityItem}
  */
 public final class ItemAbilityPacket extends NetworkPacket {
 

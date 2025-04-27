@@ -4,7 +4,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.network.NetworkEvent;
 
 /**
- * Represents an item that performs an ability when the {@link net.laserdiamond.laserutils.client.LUKeyBindings#abilityKey} is pressed
+ * Represents an item that performs an ability when the {@link net.laserdiamond.laserutils.client.LUKeyBindings#ABILITY_KEY} is pressed
  */
 public interface AbilityItem {
 

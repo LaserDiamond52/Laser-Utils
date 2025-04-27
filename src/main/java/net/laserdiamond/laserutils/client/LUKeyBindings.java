@@ -16,6 +16,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -27,23 +28,9 @@ import net.minecraftforge.fml.common.Mod;
 public class LUKeyBindings {
 
     /**
-     * Instance of this class
-     */
-    public static final LUKeyBindings INSTANCE = new LUKeyBindings();
-
-    /**
      * Ability Key
      */
-    public final KeyMapping abilityKey;
-
-    /**
-     * Registers the key bindings for Laser Utils
-     */
-    private LUKeyBindings()
-    {
-        LanguageRegistry.instance(LaserUtils.MODID, LanguageRegistry.Language.EN_US).additionalNamesRegistry.addEntry("key.categories." + LaserUtils.MODID, "Laser Utils Key Bindings");
-        this.abilityKey = registerKeyMapping("Ability Key", "ability_key", KeyConflictContext.IN_GAME, InputConstants.KEY_R);
-    }
+    public static final Lazy<KeyMapping> ABILITY_KEY = Lazy.of(() -> registerKeyMapping("Ability Key", "ability_key", KeyConflictContext.IN_GAME, InputConstants.KEY_R));
 
     /**
      * Registers a new key mapping
@@ -54,7 +41,7 @@ public class LUKeyBindings {
      * @return A new {@link KeyMapping}
      * @see InputConstants
      */
-    public static KeyMapping registerKeyMapping(String name, String description, KeyConflictContext keyConflictContext, int keyInputConstant)
+    private static KeyMapping registerKeyMapping(String name, String description, KeyConflictContext keyConflictContext, int keyInputConstant)
     {
         KeyMapping keyMapping = new KeyMapping("key." + LaserUtils.MODID + "." + description,
                 keyConflictContext,
@@ -71,7 +58,7 @@ public class LUKeyBindings {
     @SubscribeEvent
     public static void registerKeys(RegisterKeyMappingsEvent event)
     {
-        event.register(INSTANCE.abilityKey); // register key bind
+        event.register(ABILITY_KEY.get()); // register key bind
     }
 
     /**
@@ -92,13 +79,13 @@ public class LUKeyBindings {
             final Minecraft minecraft = Minecraft.getInstance();
             final LocalPlayer localPlayer = minecraft.player;
 
-            if (INSTANCE.abilityKey.consumeClick())
+            if (ABILITY_KEY.get().consumeClick())
             {
                 if (localPlayer == null)
                 {
                     return;
                 }
-                MinecraftForge.EVENT_BUS.post(new OnAbilityKeyPressEvent(localPlayer, event.getKey(), event.getScanCode(), event.getAction(), event.getModifiers()));
+                MinecraftForge.EVENT_BUS.post(new OnAbilityKeyPressEvent(localPlayer));
                 if (localPlayer.getMainHandItem().getItem() instanceof DurationAbilityItem abilityItem)
                 {
                     if (abilityItem.cooldownTicks() < 0)

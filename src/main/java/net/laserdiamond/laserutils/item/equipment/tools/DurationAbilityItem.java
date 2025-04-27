@@ -7,7 +7,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.laserdiamond.laserutils.client.LUKeyBindings;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.*;
@@ -15,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * Represents an item that performs an ability over a set amount of time when the {@link net.laserdiamond.laserutils.client.LUKeyBindings#abilityKey} is pressed
+ * Represents an item that performs an ability over a set amount of time when the {@link net.laserdiamond.laserutils.client.LUKeyBindings#ABILITY_KEY} is pressed
  */
 public interface DurationAbilityItem extends AbilityItem {
 
