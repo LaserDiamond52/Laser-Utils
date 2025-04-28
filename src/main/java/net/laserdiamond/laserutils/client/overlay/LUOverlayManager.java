@@ -2,7 +2,6 @@ package net.laserdiamond.laserutils.client.overlay;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.LayeredDraw;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.HashMap;
@@ -15,27 +14,20 @@ import java.util.function.BooleanSupplier;
  */
 public class LUOverlayManager {
 
-    /**
-     * Creates a new {@linkplain LUOverlayManager HUD Overlay Manager}. This should be called in your mod's constructor
-     * @param eventBus Your mod's {@linkplain IEventBus mod event bus}
-     */
-    public static LUOverlayManager createOverlayManager(IEventBus eventBus)
-    {
-        return new LUOverlayManager(eventBus);
-    }
-
     private final HashMap<LayeredDraw, BooleanSupplier> conditionalOverlays;
     private final HashMap<LayeredDraw, BooleanSupplier> firstConditionalOverlays;
     private final Set<LayeredDraw.Layer> overlays;
     private final Set<LayeredDraw.Layer> firstOverlays;
 
-    private LUOverlayManager(IEventBus eventBus)
+    /**
+     * Creates a new {@linkplain LUOverlayManager HUD Overlay Manager}
+     */
+    public LUOverlayManager()
     {
         this.conditionalOverlays = new HashMap<>();
         this.overlays = new HashSet<>();
         this.firstConditionalOverlays = new HashMap<>();
         this.firstOverlays = new HashSet<>();
-        eventBus.addListener(this::clientSetUp);
     }
 
     /**
@@ -88,7 +80,7 @@ public class LUOverlayManager {
      * Registers the layer when the {@linkplain FMLClientSetupEvent FML Client Set Up} is called
      * @param event The {@linkplain FMLClientSetupEvent FML Client Set Up Event} to listen for
      */
-    private void clientSetUp(FMLClientSetupEvent event)
+    public void clientSetUp(FMLClientSetupEvent event)
     {
         Minecraft minecraft = Minecraft.getInstance();
         LayeredDraw mcLayers = minecraft.gui.layers;
